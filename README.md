@@ -54,43 +54,44 @@ See [examples of GAlgebra](https://github.com/pygae/galgebra/tree/15-print-pow/e
 
 ## Installation
 
-Ideally, you should be able to install GAlgebra.jl by the following command:
+Ideally, you should be able to install GAlgebra.jl by the following command in Julia **Pkg** REPL:
 
-```julia
-julia> Pkg.add("GAlgebra")
+```
+add GAlgebra
 ```
 
 But it doesn't work like this yet.
 
 For the time being, you need to do the following 5 steps:
 
-Step 1: install PyCall.jl in Julia Pkg REPL:
+Step 1: install PyCall.jl in Julia **Pkg** REPL:
 
 ```
 add PyCall
 ```
 
-Note: pressing `]` will enter Pkg REPL mode (you'll see a prompt like `(v1.1) pkg>`), to get back to the Julia REPL please press backspace, see [Pkg doc](https://docs.julialang.org/en/v1/stdlib/Pkg/index.html) to learn more.
+Hint: pressing `]` will enter Pkg REPL mode (you'll see a prompt like `(v1.1) pkg>`), to get back to the Julia REPL please press backspace, see [Pkg doc](https://docs.julialang.org/en/v1/stdlib/Pkg/index.html) to learn more.
 
-Step 2：install from the latest source code of GAlgebra for the Python environment used by PyCall.jl:
+Step 2：install from the latest source code of GAlgebra for the Python environment used by PyCall.jl in **Julia** REPL:
 
-```bash
-julia -e 'using PyCall; run(PyCall.python_cmd(`-m pip install sympy==1.3 -e git+https://github.com/pygae/galgebra.git#egg=galgebra`))'
+```julia
+using PyCall
+run(PyCall.python_cmd(`-m pip install sympy==1.3 -e git+https://github.com/pygae/galgebra.git#egg=galgebra`))
 ```
 
-Step 3：install SymPy.jl in Julia Pkg REPL:
+Step 3：install SymPy.jl in Julia **Pkg** REPL:
 
 ```
 add SymPy
 ```
 
-Step 4: install GAlgebra.jl as a developing package in Julia Pkg REPL: 
+Step 4: install GAlgebra.jl as a developing package in Julia **Pkg** REPL: 
 
 ```
 dev https://github.com/pygae/GAlgebra.jl.git
 ```
 
-Step 5: run GAlgebra.jl unit tests in Julia Pkg REPL: 
+Step 5: run GAlgebra.jl unit tests in Julia **Pkg** REPL: 
 
 ```
 test GAlgebra

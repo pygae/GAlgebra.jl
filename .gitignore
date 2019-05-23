@@ -5,3 +5,5 @@ deps/deps.jl
 .DS_Store
 /Manifest.toml
 /dev/
+deps/build.log
+deps/src/
