@@ -34,9 +34,11 @@ v ∧ A
 # Hestene's inner product: \cdot
 v ⋅ A
 v | A
-# Left contraction: 
+# Left contraction: \intprod
+v ⨼ A
 v < A
-# Right contraction:
+# Right contraction: \intprodr
+v ⨽ A
 v > A
 # Anti-comutator (<<)
 v << A

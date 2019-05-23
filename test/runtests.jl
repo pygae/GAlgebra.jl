@@ -23,6 +23,7 @@ const vector = py"vector"
     u = V.mv("u", "vector")
     v = V.mv("v", "vector")
     w = V.mv("w", "vector")
+    A = V.mv("A", "mv")
 
     @test v + w == w + v
     @test (u + v) + w == u + (v + w)
@@ -55,6 +56,9 @@ const vector = py"vector"
 
     @test u ⋅ v == (u < v)
     @test u ⋅ v == (u > v)
+
+    @test v ⨼ A == (v < A)
+    @test v ⨽ A == (v > A)
 
     @test u << v == u ⋅ v
     @test u >> v == u ∧ v

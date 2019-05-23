@@ -8,7 +8,8 @@ import Base: +,-,*,/,^,|,==,!=,<,>,<<,>>
 
 export galgebra
 export Mv
-export ⋅,∧
+# export \cdot, \wedge, \intprod, \intprodr
+export ⋅,∧,⨼,⨽
 
 const galgebra = PyCall.PyNULL()
 const metric = PyCall.PyNULL()
@@ -55,9 +56,11 @@ end
 # Hestene's inner product: \cdot
 @define_op(Mv, ⋅, __or__)
 @define_op(Mv, |, __or__)
-# Left contraction: 
+# Left contraction: \intprod
+@define_op(Mv, ⨼, __lt__)
 @define_op(Mv, <, __lt__)
-# Right contraction:
+# Right contraction: \intprodr
+@define_op(Mv, ⨽, __gt__)
 @define_op(Mv, >, __gt__)
 # Anti-comutator (<<)
 @define_op(Mv, <<, __lshift__)
