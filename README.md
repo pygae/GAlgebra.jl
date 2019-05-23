@@ -46,7 +46,7 @@ v << A
 v >> A
 ```
 
-Note: enter unicode symbols like `∧` with corresponding LaTeX like `\wedge` by [Tab completion](https://docs.julialang.org/en/v1/stdlib/REPL/index.html#Tab-completion-1).
+Note: enter unicode symbols like `∧` with corresponding LaTeX like `\wedge` by [Tab completion](https://pkg.julialang.org/docs/julia/THl1k/1.1.0/manual/unicode-input.html).
 
 So far only `galgebra.ga.Ga` and `galgebra.mv.Mv` have been verified to work in Julia, see [tests](https://github.com/pygae/GAlgebra.jl/tree/master/test/runtests.jl).
 
@@ -75,10 +75,7 @@ Note: pressing `]` will enter Pkg REPL mode (you'll see a prompt like `(v1.1) pk
 Step 2：install from the latest source code of GAlgebra for the Python environment used by PyCall.jl:
 
 ```bash
-git clone https://github.com/pygae/galgebra.git
-cd galgebra
-julia -e 'using PyCall; run(PyCall.python_cmd(`-m pip install -e sympy==1.3`))'
-julia -e 'using PyCall; run(PyCall.python_cmd(`-m pip install -e .`))'
+julia -e 'using PyCall; run(PyCall.python_cmd(`-m pip install sympy==1.3 -e git+https://github.com/pygae/galgebra.git#egg=galgebra`))'
 ```
 
 Step 3：install SymPy.jl in Julia Pkg REPL:
@@ -87,28 +84,13 @@ Step 3：install SymPy.jl in Julia Pkg REPL:
 add SymPy
 ```
 
-Step 4: install from the latest source code of GAlgebra.jl:
-
-Clone the source:
-
-```bash
-git clone https://github.com/pygae/GAlgebra.jl.git
-cd GAlgebra.jl
-```
-
-Install GAlgebra.jl as a developing package in Julia Pkg REPL: 
+Step 4: install GAlgebra.jl as a developing package in Julia Pkg REPL: 
 
 ```
-dev .
+dev https://github.com/pygae/GAlgebra.jl.git
 ```
 
 Step 5: run GAlgebra.jl unit tests in Julia Pkg REPL: 
-
-```
-activate .
-```
-
-The prompt will change to `(GAlgebra) pkg>`, continue with:
 
 ```
 test GAlgebra
@@ -120,6 +102,6 @@ Then you'll see something like:
    Testing GAlgebra
  Resolving package versions...
 Test Summary: | Pass  Total
-GAlgebra.jl   |   22     22
+GAlgebra.jl   |   24     24
    Testing GAlgebra tests passed
 ```
