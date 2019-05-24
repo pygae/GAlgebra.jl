@@ -87,4 +87,8 @@ const vector = py"vector"
     # julia> Base.operator_precedence(:∧)
     # 13
     @test A * B ⋅ C ∧ D == ((A * B) ⋅ C) ∧ D
+
+    @test u.dual() == u * V.I()
+    @test v.project_in_blade(u) == (u ⋅ v) / u
+    @test v.project_in_blade(w) + u.project_in_blade(w) == (u + v).project_in_blade(w)
 end

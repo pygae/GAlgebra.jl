@@ -2,6 +2,12 @@ module GAlgebra
 
 using PyCall
 
+import Base: convert, getproperty, setproperty!, propertynames
+
+if isdefined(Base, :hasproperty) # Julia 1.2
+    import Base: hasproperty
+end
+
 import Base: show
 import Base: convert
 import Base: +,-,*,/,^,|,==,!=,<,>,<<,>>
@@ -22,23 +28,24 @@ mutable struct Mv
     o::PyCall.PyObject
 end
 
-Base.convert(::Type{Mv}, o::PyCall.PyObject) = Mv(o)
+convert(::Type{Mv}, o::PyCall.PyObject) = Mv(o)
+PyCall.PyObject(o::Mv) = PyCall.PyObject(o.o)
 
 macro define_op(type, op, method)
     @eval begin
-        $op(x::$type, y::$type) = x.o.$method(y.o)
+        $op(x::$type, y::$type) = x.$method(y)
     end
 end
 
 macro define_lop(type, rtype, op, lmethod)
     @eval begin
-        $op(x::$type, y::$rtype) = x.o.$lmethod(y)
+        $op(x::$type, y::$rtype) = x.$lmethod(y)
     end
 end
                 
 macro define_rop(type, ltype, op, rmethod)
     @eval begin
-        $op(x::$ltype, y::$type) = y.o.$rmethod(x)
+        $op(x::$ltype, y::$type) = y.$rmethod(x)
     end
 end
 
@@ -79,7 +86,7 @@ end
 @define_lop(Mv, Number, ==, __eq__)
 @define_lop(Mv, Number, !=, __ne__)
 
--(x::Mv) = x.o.__neg__()
+-(x::Mv) = x.__neg__()
 
 macro define_show(type)
     @eval begin
@@ -90,6 +97,38 @@ macro define_show(type)
 end
 
 @define_show(Mv)
+
+macro delegate_properties(type, obj_field)
+    @eval begin
+        function getproperty(o::$type, s::AbstractString)
+            if s == String($obj_field)
+                return getfield(o, $obj_field)
+            else
+                return getproperty(getfield(o, $obj_field), s)
+            end
+        end
+        
+        getproperty(o::$type, s::Symbol) = getproperty(o, String(s))
+        
+        propertynames(o::$type) = map(x->Symbol(first(x)),
+                                        pycall(inspect."getmembers", PyObject, getfield(o, $obj_field)))
+        
+        # avoiding method ambiguity
+        setproperty!(o::$type, s::Symbol, v) = _setproperty!(o,s,v)
+        setproperty!(o::$type, s::AbstractString, v) = _setproperty!(o,s,v)
+        
+        function _setproperty!(o::$type, s::Union{Symbol,AbstractString}, v)
+            obj = getfield(o, $obj_field)
+            setproperty!(obj, s, v)
+            o
+        end
+
+        hasproperty(o::$type, s::Symbol) = hasproperty(getfield(o, $obj_field), s)
+        hasproperty(o::$type, s::AbstractString) = hasproperty(getfield(o, $obj_field), s)
+    end
+end
+
+@delegate_properties(Mv, :o)
 
 function __init__()
     copy!(galgebra, PyCall.pyimport_conda("galgebra", "galgebra"))

@@ -104,6 +104,6 @@ Then you'll see something like:
    Testing GAlgebra
  Resolving package versions...
 Test Summary: | Pass  Total
-GAlgebra.jl   |   32     32
+GAlgebra.jl   |   36     36
    Testing GAlgebra tests passed
 ```
