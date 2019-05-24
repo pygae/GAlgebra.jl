@@ -26,6 +26,7 @@ const vector = py"vector"
     A = V.mv("A", "mv")
     B = V.mv("B", "mv")
     C = V.mv("C", "mv")
+    D = V.mv("D", "mv")
     G = V.mv("G", "grade", 2)
 
     @test v + w == w + v
@@ -76,4 +77,14 @@ const vector = py"vector"
     @test A ⨱ B == - B ⨱ A
     @test A << B == (A * B + B * A) / 2
     @test A ⨱ B == (A * B - B * A) / 2
+
+    # Operator precedence: * ⋅ ∧ has the same precedence, unlike in math
+    # see https://github.com/JuliaLang/julia/blob/master/src/julia-parser.scm
+    # julia> Base.operator_precedence(:*)
+    # 13
+    # julia> Base.operator_precedence(:⋅)
+    # 13
+    # julia> Base.operator_precedence(:∧)
+    # 13
+    @test A * B ⋅ C ∧ D == ((A * B) ⋅ C) ∧ D
 end
