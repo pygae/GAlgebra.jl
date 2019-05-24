@@ -26,6 +26,7 @@ const vector = py"vector"
     A = V.mv("A", "mv")
     B = V.mv("B", "mv")
     C = V.mv("C", "mv")
+    G = V.mv("G", "grade", 2)
 
     @test v + w == w + v
     @test (u + v) + w == u + (v + w)
@@ -59,14 +60,20 @@ const vector = py"vector"
     @test u ⋅ v == (u < v)
     @test u ⋅ v == (u > v)
 
-    @test v ⨼ A == (v < A)
-    @test v ⨽ A == (v > A)
-
     @test u << v == u ⋅ v
     @test u >> v == u ∧ v
 
-    @test u * A == u ⋅ A + u ∧ A
-    @test u * A == u ⨼ A + u ∧ A
+    @test v ⨼ B == (v < B)
+    @test v ⨽ B == (v > B)
+
+    @test u * B == u ⋅ B + u ∧ B
+    @test u * B == u ⨼ B + u ∧ B
 
     @test (A ∧ B) ⨼ C == A ⨼ (B ⨼ C)
+
+    @test A ⨱ B == A >> B
+    @test A << B == B << A
+    @test A ⨱ B == - B ⨱ A
+    @test A << B == (A * B + B * A) / 2
+    @test A ⨱ B == (A * B - B * A) / 2
 end

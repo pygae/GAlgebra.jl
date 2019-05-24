@@ -40,9 +40,10 @@ v < A
 # Right contraction: \intprodr
 v ⨽ A
 v > A
-# Anti-comutator (<<)
+# Anti-comutator product: A<<B = (AB+BA)/2
 v << A
-# Comutator (>>)
+# Comutator product: \timesbar  A⨱B = (AB-BA)/2
+v ⨱ A
 v >> A
 ```
 
@@ -103,6 +104,6 @@ Then you'll see something like:
    Testing GAlgebra
  Resolving package versions...
 Test Summary: | Pass  Total
-GAlgebra.jl   |   24     24
+GAlgebra.jl   |   32     32
    Testing GAlgebra tests passed
 ```

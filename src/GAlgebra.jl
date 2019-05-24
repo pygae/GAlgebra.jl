@@ -8,8 +8,8 @@ import Base: +,-,*,/,^,|,==,!=,<,>,<<,>>
 
 export galgebra
 export Mv
-# export \cdot, \wedge, \intprod, \intprodr
-export ⋅,∧,⨼,⨽
+# export \cdot, \wedge, \intprod, \intprodr, \timesbar
+export ⋅,∧,⨼,⨽,⨱
 
 const galgebra = PyCall.PyNULL()
 const metric = PyCall.PyNULL()
@@ -47,7 +47,6 @@ end
 # Geometric product: *
 @define_op(Mv, *, __mul__)
 @define_op(Mv, /, __div__)
-@define_op(Mv, ^, __pow__)
 @define_op(Mv, ==, __eq__)
 @define_op(Mv, !=, __ne__)
 
@@ -62,9 +61,10 @@ end
 # Right contraction: \intprodr
 @define_op(Mv, ⨽, __gt__)
 @define_op(Mv, >, __gt__)
-# Anti-comutator (<<)
+# Anti-comutator product: A<<B = (AB+BA)/2
 @define_op(Mv, <<, __lshift__)
-# Comutator (>>)
+# Comutator product: \timesbar  A⨱B = (AB-BA)/2
+@define_op(Mv, ⨱, __rshift__)
 @define_op(Mv, >>, __rshift__)
 
 @define_lop(Mv, Number, +, __add__)
@@ -75,6 +75,7 @@ end
 @define_rop(Mv, Number, *, __rmul__)
 @define_lop(Mv, Number, /, __div__)
 @define_rop(Mv, Number, /, __rdiv__)
+@define_lop(Mv, Number, ^, __pow__)
 @define_lop(Mv, Number, ==, __eq__)
 @define_lop(Mv, Number, !=, __ne__)
 
