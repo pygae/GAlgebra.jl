@@ -1,0 +1,21 @@
+language: julia
+os:
+  - linux
+julia:
+  - 1.0
+  - 1.1
+  - nightly
+addons:
+  apt:
+    packages:
+      - python3-pip
+env:
+  global:
+    - PYTHON=python3
+matrix:
+  allow_failures:
+    - julia: nightly
+git:
+    depth: 1
+after_success:
+  - julia -e 'using Pkg; cd(Pkg.dir("GAlgebra")); Pkg.add("Coverage"); using Coverage; Codecov.submit(Codecov.process_folder())'
