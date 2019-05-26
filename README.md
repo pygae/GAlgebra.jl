@@ -6,6 +6,15 @@ Julia interface to [GAlgebra](https://github.com/pygae/galgebra), a symbolic Geo
 
 Very early. But it already works and has some unit tests.
 
+| **Build Status**                                                                                |
+|:-----------------------------------------------------------------------------------------------:|
+| [![][travis-img]][travis-url]                                   [![][codecov-img]][codecov-url] |
+
+[travis-img]: https://travis-ci.com/pygae/GAlgebra.jl.svg?branch=master
+[travis-url]: https://travis-ci.com/pygae/GAlgebra.jl
+[codecov-img]: https://img.shields.io/codecov/c/github/pygae/GAlgebra.jl.svg
+[codecov-url]: https://codecov.io/gh/pygae/GAlgebra.jl
+
 ## Getting Started
 
 GAlgebra.jl itself doesn't depend on [SymPy.jl](https://github.com/JuliaPy/SymPy.jl), but is designed to work with it.
