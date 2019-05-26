@@ -4,7 +4,7 @@ Julia interface to [GAlgebra](https://github.com/pygae/galgebra), a symbolic Geo
 
 ## Development Status
 
-Very early. But it already works and has some unit tests.
+Very early. But it already works and has some tests.
 
 | **Build Status**                                                                                |
 |:-----------------------------------------------------------------------------------------------:|
@@ -72,7 +72,7 @@ dev https://github.com/pygae/GAlgebra.jl.git
 
 The installation process will take a while, because it will install [PyCall.jl](https://github.com/JuliaPy/PyCall.jl) and its dependencies and it will also use `pip` to install [GAlgebra](https://github.com/pygae/galgebra) (it currently requires `sympy==1.3` so this prerequisite is also ensured).
 
-Now you may run GAlgebra.jl unit tests in Julia **Pkg REPL mode**: 
+Now you may run GAlgebra.jl tests in Julia **Pkg REPL mode**: 
 
 ```
 test GAlgebra
