@@ -14,8 +14,17 @@ import Base: +,-,*,/,^,|,==,!=,<,>,<<,>>
 
 export galgebra
 export Mv
-# export \cdot, \wedge, \intprod, \intprodr, \timesbar
-export ⋅,∧,⨼,⨽,⨱
+# export \cdot, \wedge, \intprod, \intprodr, \dottimes, \timesbar, \circledast
+export ⋅,∧,⨼,⨽,⨰,⨱,⊛
+# Operator precedence: they have the same precedence, unlike in math
+# julia> for op ∈ [:⋅ :∧ :⨼ :⨽ :⨰ :⨱ :⊛]; println(String(op), "  ", Base.operator_precedence(op)) end
+# ⋅  13
+# ∧  13
+# ⨼  13
+# ⨽  13
+# ⨰  13
+# ⨱  13
+# ⊛  13
 
 const galgebra = PyCall.PyNULL()
 const metric = PyCall.PyNULL()
@@ -68,11 +77,15 @@ end
 # Right contraction: \intprodr
 @define_op(Mv, ⨽, __gt__)
 @define_op(Mv, >, __gt__)
-# Anti-comutator product: A<<B = (AB+BA)/2
+# Anti-comutator product: \dottimes  A⨰B = (AB+BA)/2
+@define_op(Mv, ⨰, __lshift__)
 @define_op(Mv, <<, __lshift__)
 # Comutator product: \timesbar  A⨱B = (AB-BA)/2
 @define_op(Mv, ⨱, __rshift__)
 @define_op(Mv, >>, __rshift__)
+
+# Scalar product: \circledast A ⊛ B = <A B†>
+⊛(x::Mv, y::Mv) = (x * y.rev()).scalar()
 
 @define_lop(Mv, Number, +, __add__)
 @define_rop(Mv, Number, +, __radd__)

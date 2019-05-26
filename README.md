@@ -4,7 +4,7 @@ Julia interface to [GAlgebra](https://github.com/pygae/galgebra), a symbolic Geo
 
 ## Development Status
 
-Very early. But it already works and has some tests.
+Very early. But it already works and has many tests.
 
 | **Build Status**                                                                                |
 |:-----------------------------------------------------------------------------------------------:|
@@ -42,23 +42,21 @@ A = o3d.mv("A", "mv")
 v ∧ A
 # Hestene's inner product: \cdot
 v ⋅ A
-v | A
 # Left contraction: \intprod
 v ⨼ A
-v < A
 # Right contraction: \intprodr
 v ⨽ A
-v > A
-# Anti-comutator product: A<<B = (AB+BA)/2
-v << A
+# Scalar product: \circledast A ⊛ B = <A B†>
+v ⊛ A
+# Anti-comutator product: \dottimes  A⨰B = (AB+BA)/2
+v ⨰ A
 # Comutator product: \timesbar  A⨱B = (AB-BA)/2
 v ⨱ A
-v >> A
 ```
 
 Note: enter unicode symbols like `∧` with corresponding LaTeX like `\wedge` by [Tab completion](https://pkg.julialang.org/docs/julia/THl1k/1.1.0/manual/unicode-input.html).
 
-So far only `galgebra.ga.Ga` and `galgebra.mv.Mv` have been verified to work in Julia, see [tests](https://github.com/pygae/GAlgebra.jl/tree/master/test/runtests.jl).
+So far only `galgebra.ga.Ga` and `galgebra.mv.Mv` have been verified to work in Julia, see [tests](https://github.com/pygae/GAlgebra.jl/tree/master/test/runtests.jl). The tests verified many identities in Linear Algebra and Geometric Algebra.
 
 See [examples of GAlgebra](https://github.com/pygae/galgebra/tree/15-print-pow/examples) for more examples in Python. With some small changes, they can be ported to Julia.
 
@@ -86,7 +84,7 @@ Then you'll see something like:
    Testing GAlgebra
  Resolving package versions...
 Test Summary: | Pass  Total
-GAlgebra.jl   |   36     36
+GAlgebra.jl   |  300    300
    Testing GAlgebra tests passed
 ```
 
