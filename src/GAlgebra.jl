@@ -2,32 +2,10 @@ module GAlgebra
 
 using PyCall
 
-import Base: convert, getproperty, setproperty!, propertynames
-
-if isdefined(Base, :hasproperty) # Julia 1.2
-    import Base: hasproperty
-end
-
-import Base: show
-import Base: @pure, convert
-import Base: +, -, *, /, ^, |, %, ==, !=, <, >, <<, >>, abs, inv, ~, adjoint, getindex
+import Base: @pure 
 
 export galgebra
 export Mv
-# export \cdot, \wedge, \intprod, \intprodr, \dottimes, \timesbar, \circledast
-export ⋅, ∧, ⨼, ⨽, ⨰, ⨱, ⊛
-# Operator precedence: they have the same precedence, unlike in math
-# julia> for op ∈ [:⋅ :∧ :⨼ :⨽ :⨰ :⨱ :⊛]; println(String(op), "  ", Base.operator_precedence(op)) end
-# ⋅  13
-# ∧  13
-# ⨼  13
-# ⨽  13
-# ⨰  13
-# ⨱  13
-# ⊛  13
-
-# experimental export \bar\times
-# export ×̄
 
 const galgebra = PyCall.PyNULL()
 const metric = PyCall.PyNULL()
@@ -36,12 +14,58 @@ const mv = PyCall.PyNULL()
 const lt = PyCall.PyNULL()
 const printer = PyCall.PyNULL()
 
-mutable struct Mv
-    o::PyCall.PyObject
+if isdefined(Base, :hasproperty) # Julia 1.2
+    import Base: hasproperty
 end
 
-convert(::Type{Mv}, o::PyCall.PyObject) = Mv(o)
-PyCall.PyObject(o::Mv) = PyCall.PyObject(o.o)
+macro define_show(type)
+    @eval begin
+        Base.show(io::IO, x::$type) = print(io, pystr(x.o))
+        Base.show(io::IO, ::MIME"text/plain", x::$type) = print(io, pystr(x.o))
+        Base.show(io::IO, ::MIME"text/latex", x::$type) = print(io, "\\begin{align*}" * galgebra.printer.latex(x.o) * "\\end{align*}")
+    end
+end
+
+macro delegate_properties(type, obj_field)
+    @eval begin
+        Base.convert(::Type{$type}, o::PyCall.PyObject) = $type(o)
+        PyCall.PyObject(o::$type) = PyCall.PyObject(getfield(o, $obj_field))
+
+        function Base.getproperty(o::$type, s::AbstractString)
+            if s == String($obj_field)
+                return getfield(o, $obj_field)
+            else
+                return getproperty(getfield(o, $obj_field), s)
+            end
+        end
+        
+        Base.getproperty(o::$type, s::Symbol) = getproperty(o, String(s))
+        
+        Base.propertynames(o::$type) = map(x->Symbol(first(x)),
+                                        pycall(inspect."getmembers", PyObject, getfield(o, $obj_field)))
+        
+        # avoiding method ambiguity
+        Base.setproperty!(o::$type, s::Symbol, v) = _setproperty!(o,s,v)
+        Base.setproperty!(o::$type, s::AbstractString, v) = _setproperty!(o,s,v)
+        
+        function _setproperty!(o::$type, s::Union{Symbol,AbstractString}, v)
+            obj = getfield(o, $obj_field)
+            setproperty!(obj, s, v)
+            o
+        end
+
+        hasproperty(o::$type, s::Symbol) = hasproperty(getfield(o, $obj_field), s)
+        hasproperty(o::$type, s::AbstractString) = hasproperty(getfield(o, $obj_field), s)
+    end
+end
+
+macro delegate_doc(type)
+    @eval begin
+        # Expose Python docstrings to the Julia doc system
+        Docs.getdoc(x::$type) = Text(convert(String, x."__doc__"))
+        Docs.Binding(x::$type, s::Symbol) = getproperty(x, s)
+    end
+end
 
 macro define_op(type, op, method)
     @eval begin
@@ -60,6 +84,54 @@ macro define_rop(type, ltype, op, rmethod)
         @pure $op(x::$ltype, y::$type) = y.$rmethod(x)
     end
 end
+
+macro define_unary_op(type, op, method)
+    @eval begin
+        @pure $op(x::$type) = x.$method()
+    end
+end
+
+# :⁻¹ => :inv, :⁽²⁾ => :square, :⁽³⁾ => :cube
+# :ᵀ => :transpose, :ᴴ => :ctranspose
+
+macro define_postfix_symbol(super_script)
+    @eval begin
+        struct $super_script end
+        export $super_script
+    end
+end
+
+@define_postfix_symbol(⁻¹)
+
+macro define_postfix_op(type, super_script, func)
+    @eval begin
+        Base.:(*)(x::$type,::typeof($super_script)) = $func(x)
+    end
+end
+
+mutable struct Mv
+    o::PyCall.PyObject
+end
+
+@define_show(Mv)
+@delegate_properties(Mv, :o)
+@delegate_doc(Mv)
+
+import Base: +, -, *, /, ^, |, %, ==, !=, <, >, <<, >>, abs, inv, ~, adjoint, getindex
+# export \cdot, \wedge, \intprod, \intprodr, \dottimes, \timesbar, \circledast
+export ⋅, ∧, ⨼, ⨽, ⨰, ⨱, ⊛
+# Operator precedence: they have the same precedence, unlike in math
+# julia> for op ∈ [:⋅ :∧ :⨼ :⨽ :⨰ :⨱ :⊛]; println(String(op), "  ", Base.operator_precedence(op)) end
+# ⋅  13
+# ∧  13
+# ⨼  13
+# ⨽  13
+# ⨰  13
+# ⨱  13
+# ⊛  13
+
+# experimental export \bar\times
+# export ×̄
 
 @define_op(Mv, +, __add__)
 @define_op(Mv, -, __sub__)
@@ -80,48 +152,43 @@ end
 # Right contraction: \intprodr
 @define_op(Mv, ⨽, __gt__)
 @define_op(Mv, >, __gt__)
-# Anti-comutator product: \dottimes  A⨰B = (AB+BA)/2
+# Anti-comutator product: \dottimes
+# A⨰B = (AB+BA)/2
 @define_op(Mv, ⨰, __lshift__)
 @define_op(Mv, <<, __lshift__)
-# # experimental symbol for anti-comutator product: \bar\times A×̄B = (AB+BA)/2
+# # experimental symbol for anti-comutator product: \bar\times
+# A×̄B = (AB+BA)/2
 # @define_op(Mv, ×̄, __lshift__)
-# Comutator product: \timesbar  A⨱B = (AB-BA)/2
+
+# Comutator product: \timesbar
+# A⨱B = (AB-BA)/2
 @define_op(Mv, ⨱, __rshift__)
 @define_op(Mv, >>, __rshift__)
 
-# Scalar product: \circledast A ⊛ B = <A B†>
+# Scalar product: \circledast
+# A ⊛ B = <A B†>
 @pure ⊛(x::Mv, y::Mv) = (x * ~y).scalar()
 @pure %(x::Mv, y::Mv) = x ⊛ y
 
-@pure -(x::Mv) = x.__neg__()
+@define_unary_op(Mv, -, __neg__)
 
 # Norm: abs(A) = |A| = A.norm()
-@pure abs(x::Mv) = x.norm()
+@define_unary_op(Mv, abs, norm)
 
-# Inverse: A^-1 = A.inv()
-@pure inv(x::Mv) = x.inv()
+# Inverse: \^-\^1
+# (A)⁻¹ = A^-1 = A.inv()
+@define_unary_op(Mv, inv, inv)
+@define_postfix_op(Mv, ⁻¹, inv)
 
-# Reverse: ~A = A† = A.rev()
-@pure ~(x::Mv) = x.rev()
+# Reversion: ~A = A† = A.rev()
+@define_unary_op(Mv, ~, rev)
 
-# Dual: A' = A*
-@pure adjoint(x::Mv) = x.dual()
+# Dual: A' = A * I
+# note: Ga.dual_mode_value is default to "I+"
+@define_unary_op(Mv, adjoint, dual)
 
 # Grade: A[i] = <A>_i = A.grade(i) = grade-i part of A
 @pure getindex(x::Mv, i::Integer) = x.grade(i)
-
-# :⁻¹ => :inv, :⁽²⁾ => :square, :⁽³⁾ => :cube
-# :ᵀ => :transpose, :ᴴ => :ctranspose
-
-macro define_postfix_op(super_script, func)
-    @eval begin
-        struct $super_script end
-        export $super_script
-        Base.:(*)(x::Mv,::typeof($super_script)) = $func(x)
-    end
-end
-
-@define_postfix_op(⁻¹, inv)
 
 @define_lop(Mv, Number, +, __add__)
 @define_rop(Mv, Number, +, __radd__)
@@ -143,52 +210,6 @@ end
         x.__pow__(y)
     end
 end
-
-macro define_show(type)
-    @eval begin
-        Base.show(io::IO, x::$type) = print(io, pystr(x.o))
-        Base.show(io::IO, ::MIME"text/plain", x::$type) = print(io, pystr(x.o))
-        Base.show(io::IO, ::MIME"text/latex", x::$type) = print(io, "\\begin{align*}" * galgebra.printer.latex(x.o) * "\\end{align*}")
-    end
-end
-
-@define_show(Mv)
-
-macro delegate_properties(type, obj_field)
-    @eval begin
-        function getproperty(o::$type, s::AbstractString)
-            if s == String($obj_field)
-                return getfield(o, $obj_field)
-            else
-                return getproperty(getfield(o, $obj_field), s)
-            end
-        end
-        
-        getproperty(o::$type, s::Symbol) = getproperty(o, String(s))
-        
-        propertynames(o::$type) = map(x->Symbol(first(x)),
-                                        pycall(inspect."getmembers", PyObject, getfield(o, $obj_field)))
-        
-        # avoiding method ambiguity
-        setproperty!(o::$type, s::Symbol, v) = _setproperty!(o,s,v)
-        setproperty!(o::$type, s::AbstractString, v) = _setproperty!(o,s,v)
-        
-        function _setproperty!(o::$type, s::Union{Symbol,AbstractString}, v)
-            obj = getfield(o, $obj_field)
-            setproperty!(obj, s, v)
-            o
-        end
-
-        hasproperty(o::$type, s::Symbol) = hasproperty(getfield(o, $obj_field), s)
-        hasproperty(o::$type, s::AbstractString) = hasproperty(getfield(o, $obj_field), s)
-    end
-end
-
-@delegate_properties(Mv, :o)
-
-# Expose Python docstrings to the Julia doc system
-Docs.getdoc(x::Mv) = Text(convert(String, x."__doc__"))
-Docs.Binding(x::Mv, s::Symbol) = getproperty(x, s)
 
 function __init__()
     copy!(galgebra, PyCall.pyimport_conda("galgebra", "galgebra"))

@@ -42,6 +42,7 @@ const vector = py"vector"
     @test A ⨱ B == A >> B == (A * B - B * A) / 2
     @test A ⊛ B == A % B
 
+    @test -v == -1 * v
     @test abs(v) == v.norm()
     @test abs(R) == R.norm()
     @test ~A == A.rev()

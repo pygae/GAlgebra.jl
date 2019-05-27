@@ -58,21 +58,28 @@ v ⨰ A
 
 # Norm: abs(A) = |A| = A.norm()
 abs(v)
-# Inverse: (A)⁻¹ = A^-1 = A.inv()
+
+# Inverse: \^-\^1
+# (A)⁻¹ = A^-1 = A.inv()
 (R)⁻¹
 R^-1
-# Reverse: ~A = A† = A.rev()
+
+# Reversion: ~A = A† = A.rev()
 ~A
+
 # Dual: A' = A * I
 # note: Ga.dual_mode_value is default to "I+"
 A'
 
 # Grade-i part: A[i] = <A>_i = A.grade(i)
 A[2]
+
 # Scalar (grade-0) part: <A> = <A>_0 = A.scalar()
 A.scalar()
+
 # Even-grade part: <A>_+ = A.even()
 A.even()
+
 # Odd-grade part: <A>_- = A.odd()
 A.odd()
 ```
