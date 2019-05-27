@@ -35,8 +35,12 @@ using GAlgebra
 (x, y, z) = xyz = symbols("x,y,z",real=true)
 (o3d, ex, ey, ez) = galgebra.ga.Ga.build("e", g=[1, 1, 1], coords=xyz)
 
+u = V.mv("u", "vector")
 v = o3d.mv("v", "vector")
 A = o3d.mv("A", "mv")
+R = o3d.mv("R", "spinor")
+# Volume element
+I = o3d.I()
 
 # Wedge product: \wedge
 v ∧ A
@@ -48,10 +52,64 @@ v ⨼ A
 v ⨽ A
 # Scalar product: \circledast A ⊛ B = <A B†>
 v ⊛ A
-# Anti-comutator product: \dottimes  A⨰B = (AB+BA)/2
-v ⨰ A
-# Comutator product: \timesbar  A⨱B = (AB-BA)/2
+# Comutator product: \timesbar
+# A⨱B = (AB-BA)/2
 v ⨱ A
+# Anti-comutator product: \dottimes
+# A⨰B = (AB+BA)/2
+v ⨰ A
+
+# Norm: abs(A) = |A| = A.norm()
+abs(v)
+
+# Inverse: \^-\^1
+# (A)⁻¹ = A^-1 = A.inv()
+(R)⁻¹
+R^-1
+
+# Reversion: ~A = A.rev()
+# A^† is usually used in literature
+~A
+
+# Dual: A' = A * I
+# note: Ga.dual_mode_value is default to "I+"
+# change Ga.dual_mode_value to get a different definition
+A'
+
+# Grade involution: \^-
+# (A)⁻ = A+ - A-
+# A* is usually used in literature
+(A)⁻
+involution(A)
+
+# Clifford conjugate: \doublepipe
+# (A)ǂ = ((A)^*)^†
+(A)ǂ
+conjugate(A)
+
+# Projection: proj(B, A) = A.project_in_blade(B)
+proj(u, v)
+
+# Reflection: refl(B, A) = A.reflect_in_blade(B)
+refl(u, v)
+
+# Natural base exponential of x: e^x
+exp(u ∧ v)
+
+# Rotate by the 2-blade R the multivector A
+rot(u ∧ v, A)
+
+# Grade-i part: A[i] = <A>_i = A.grade(i)
+A[2]
+
+# Scalar (grade-0) part: <A> = <A>_0 = A.scalar()
+A.scalar()
+
+# Even-grade part: A+ = A.even()
+A.even()
+
+# Odd-grade part: A- = A.odd()
+A.odd()
 ```
 
 Note: enter unicode symbols like `∧` with corresponding LaTeX like `\wedge` by [Tab completion](https://pkg.julialang.org/docs/julia/THl1k/1.1.0/manual/unicode-input.html).
@@ -84,7 +142,7 @@ Then you'll see something like:
    Testing GAlgebra
  Resolving package versions...
 Test Summary: | Pass  Total
-GAlgebra.jl   |  300    300
+GAlgebra.jl   |  352    352
    Testing GAlgebra tests passed
 ```
 
