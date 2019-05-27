@@ -96,16 +96,24 @@ end
 
 macro define_postfix_symbol(super_script)
     @eval begin
-        struct $super_script end
+        const $super_script = () -> String(:super_script)
         export $super_script
     end
 end
 
+# \^-\^1
 @define_postfix_symbol(⁻¹)
+# \^T
+@define_postfix_symbol(ᵀ)
+# \doublepipe
+@define_postfix_symbol(ǂ)
+# \^-
+@define_postfix_symbol(⁻)
 
 macro define_postfix_op(type, super_script, func)
     @eval begin
         Base.:(*)(x::$type,::typeof($super_script)) = $func(x)
+        Base.:(^)(x::$type,::typeof($super_script)) = $func(x)
     end
 end
 
@@ -118,10 +126,11 @@ end
 @delegate_doc(Mv)
 
 import Base: +, -, *, /, ^, |, %, ==, !=, <, >, <<, >>, abs, inv, ~, adjoint, getindex
-# export \cdot, \wedge, \intprod, \intprodr, \dottimes, \timesbar, \circledast
-export ⋅, ∧, ⨼, ⨽, ⨰, ⨱, ⊛
+# export \cdot, \wedge, \intprod, \intprodr, \dottimes, \timesbar, \circledast, \times
+export ⋅, ∧, ⨼, ⨽, ⨰, ⨱, ⊛, ×
 # Operator precedence: they have the same precedence, unlike in math
-# julia> for op ∈ [:⋅ :∧ :⨼ :⨽ :⨰ :⨱ :⊛]; println(String(op), "  ", Base.operator_precedence(op)) end
+# julia> for op ∈ [:* :⋅ :∧ :⨼ :⨽ :⨰ :⨱ :⊛ :×]; println(String(op), "  ", Base.operator_precedence(op)) end
+# *  13
 # ⋅  13
 # ∧  13
 # ⨼  13
@@ -129,6 +138,7 @@ export ⋅, ∧, ⨼, ⨽, ⨰, ⨱, ⊛
 # ⨰  13
 # ⨱  13
 # ⊛  13
+# ×  13
 
 # experimental export \bar\times
 # export ×̄
@@ -156,6 +166,10 @@ export ⋅, ∧, ⨼, ⨽, ⨰, ⨱, ⊛
 # A⨰B = (AB+BA)/2
 @define_op(Mv, ⨰, __lshift__)
 @define_op(Mv, <<, __lshift__)
+
+# Cross product for vectors in 3D
+@pure ×(x::Mv, y::Mv) = mv.cross(x, y)
+
 # # experimental symbol for anti-comutator product: \bar\times
 # A×̄B = (AB+BA)/2
 # @define_op(Mv, ×̄, __lshift__)
@@ -180,15 +194,48 @@ export ⋅, ∧, ⨼, ⨽, ⨰, ⨱, ⊛
 @define_unary_op(Mv, inv, inv)
 @define_postfix_op(Mv, ⁻¹, inv)
 
-# Reversion: ~A = A† = A.rev()
+# Reversion: ~A = (A)ᵀ = A.rev()
+# A^† is usually used in literature, but \dagger is reserved by Julia
 @define_unary_op(Mv, ~, rev)
+@define_unary_op(Mv, rev, rev)
+@define_postfix_op(Mv, ᵀ, rev)
 
 # Dual: A' = A * I
 # note: Ga.dual_mode_value is default to "I+"
+# change Ga.dual_mode_value to get a different definition
+# A^⊥ (\bot) is sometimes used in literature
 @define_unary_op(Mv, adjoint, dual)
 
-# Grade: A[i] = <A>_i = A.grade(i) = grade-i part of A
+export involution, conjugate, proj, refl, rot, exp_with_hint
+
+# Grade involution: \^-
+# (A)⁻ = A+ - A-
+# A^* is usually used in literature but * and ∗(\ast) both parsed as binary operator in Julia
+@pure involution(x::Mv) = x.even() - x.odd()
+@define_postfix_op(Mv, ⁻, involution)
+
+# Clifford conjugate: \doublepipe
+# (A)ǂ = ((A)^*)^†
+# A^‡ is usually used in literature but \ddagger is reserved by Julia
+@pure conjugate(x::Mv) = involution(x).rev()
+@define_postfix_op(Mv, ǂ, conjugate)
+
+# Grade-i part: A[i] = <A>_i = A.grade(i)
 @pure getindex(x::Mv, i::Integer) = x.grade(i)
+
+# Projection: proj(B, A) = A.project_in_blade(B)
+@pure proj(y::Mv, x::Mv) = mv.proj(y, x)
+
+# Reflection: refl(B, A) = A.reflect_in_blade(B)
+@pure refl(y::Mv, x::Mv) = mv.refl(y, x)
+
+# Rotate by the 2-blade itheta the multivector A
+# rot(itheta, A, hint="-") = A.rotate_multivector(itheta, hint)
+@pure rot(itheta::Mv, A::Mv, hint::AbstractString="-") = mv.rot(itheta, A, hint)
+
+# Natural base exponential of x: e^x
+@pure Base.exp(x::Mv) = exp_with_hint(x, "-")
+@pure exp_with_hint(x::Mv, hint::AbstractString="-") = mv.exp(x, hint)
 
 @define_lop(Mv, Number, +, __add__)
 @define_rop(Mv, Number, +, __radd__)

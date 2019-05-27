@@ -35,6 +35,7 @@ using GAlgebra
 (x, y, z) = xyz = symbols("x,y,z",real=true)
 (o3d, ex, ey, ez) = galgebra.ga.Ga.build("e", g=[1, 1, 1], coords=xyz)
 
+u = V.mv("u", "vector")
 v = o3d.mv("v", "vector")
 A = o3d.mv("A", "mv")
 R = o3d.mv("R", "spinor")
@@ -64,12 +65,37 @@ abs(v)
 (R)⁻¹
 R^-1
 
-# Reversion: ~A = A† = A.rev()
+# Reversion: ~A = A.rev()
+# A^† is usually used in literature
 ~A
 
 # Dual: A' = A * I
 # note: Ga.dual_mode_value is default to "I+"
+# change Ga.dual_mode_value to get a different definition
 A'
+
+# Grade involution: \^-
+# (A)⁻ = A+ - A-
+# A* is usually used in literature
+(A)⁻
+involution(A)
+
+# Clifford conjugate: \doublepipe
+# (A)ǂ = ((A)^*)^†
+(A)ǂ
+conjugate(A)
+
+# Projection: proj(B, A) = A.project_in_blade(B)
+proj(u, v)
+
+# Reflection: refl(B, A) = A.reflect_in_blade(B)
+refl(u, v)
+
+# Natural base exponential of x: e^x
+exp(u ∧ v)
+
+# Rotate by the 2-blade R the multivector A
+rot(u ∧ v, A)
 
 # Grade-i part: A[i] = <A>_i = A.grade(i)
 A[2]
@@ -77,10 +103,10 @@ A[2]
 # Scalar (grade-0) part: <A> = <A>_0 = A.scalar()
 A.scalar()
 
-# Even-grade part: <A>_+ = A.even()
+# Even-grade part: A+ = A.even()
 A.even()
 
-# Odd-grade part: <A>_- = A.odd()
+# Odd-grade part: A- = A.odd()
 A.odd()
 ```
 
