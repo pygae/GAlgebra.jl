@@ -9,13 +9,13 @@ if isdefined(Base, :hasproperty) # Julia 1.2
 end
 
 import Base: show
-import Base: convert
-import Base: +,-,*,/,^,|,==,!=,<,>,<<,>>
+import Base: @pure, convert
+import Base: +, -, *, /, ^, |, %, ==, !=, <, >, <<, >>, abs, inv, ~, adjoint, getindex
 
 export galgebra
 export Mv
 # export \cdot, \wedge, \intprod, \intprodr, \dottimes, \timesbar, \circledast
-export ⋅,∧,⨼,⨽,⨰,⨱,⊛
+export ⋅, ∧, ⨼, ⨽, ⨰, ⨱, ⊛
 # Operator precedence: they have the same precedence, unlike in math
 # julia> for op ∈ [:⋅ :∧ :⨼ :⨽ :⨰ :⨱ :⊛]; println(String(op), "  ", Base.operator_precedence(op)) end
 # ⋅  13
@@ -25,6 +25,9 @@ export ⋅,∧,⨼,⨽,⨰,⨱,⊛
 # ⨰  13
 # ⨱  13
 # ⊛  13
+
+# experimental export \bar\times
+# export ×̄
 
 const galgebra = PyCall.PyNULL()
 const metric = PyCall.PyNULL()
@@ -42,19 +45,19 @@ PyCall.PyObject(o::Mv) = PyCall.PyObject(o.o)
 
 macro define_op(type, op, method)
     @eval begin
-        $op(x::$type, y::$type) = x.$method(y)
+        @pure $op(x::$type, y::$type) = x.$method(y)
     end
 end
 
 macro define_lop(type, rtype, op, lmethod)
     @eval begin
-        $op(x::$type, y::$rtype) = x.$lmethod(y)
+        @pure $op(x::$type, y::$rtype) = x.$lmethod(y)
     end
 end
                 
 macro define_rop(type, ltype, op, rmethod)
     @eval begin
-        $op(x::$ltype, y::$type) = y.$rmethod(x)
+        @pure $op(x::$ltype, y::$type) = y.$rmethod(x)
     end
 end
 
@@ -80,12 +83,45 @@ end
 # Anti-comutator product: \dottimes  A⨰B = (AB+BA)/2
 @define_op(Mv, ⨰, __lshift__)
 @define_op(Mv, <<, __lshift__)
+# # experimental symbol for anti-comutator product: \bar\times A×̄B = (AB+BA)/2
+# @define_op(Mv, ×̄, __lshift__)
 # Comutator product: \timesbar  A⨱B = (AB-BA)/2
 @define_op(Mv, ⨱, __rshift__)
 @define_op(Mv, >>, __rshift__)
 
 # Scalar product: \circledast A ⊛ B = <A B†>
-⊛(x::Mv, y::Mv) = (x * y.rev()).scalar()
+@pure ⊛(x::Mv, y::Mv) = (x * ~y).scalar()
+@pure %(x::Mv, y::Mv) = x ⊛ y
+
+@pure -(x::Mv) = x.__neg__()
+
+# Norm: abs(A) = |A| = A.norm()
+@pure abs(x::Mv) = x.norm()
+
+# Inverse: A^-1 = A.inv()
+@pure inv(x::Mv) = x.inv()
+
+# Reverse: ~A = A† = A.rev()
+@pure ~(x::Mv) = x.rev()
+
+# Dual: A' = A*
+@pure adjoint(x::Mv) = x.dual()
+
+# Grade: A[i] = <A>_i = A.grade(i) = grade-i part of A
+@pure getindex(x::Mv, i::Integer) = x.grade(i)
+
+# :⁻¹ => :inv, :⁽²⁾ => :square, :⁽³⁾ => :cube
+# :ᵀ => :transpose, :ᴴ => :ctranspose
+
+macro define_postfix_op(super_script, func)
+    @eval begin
+        struct $super_script end
+        export $super_script
+        Base.:(*)(x::Mv,::typeof($super_script)) = $func(x)
+    end
+end
+
+@define_postfix_op(⁻¹, inv)
 
 @define_lop(Mv, Number, +, __add__)
 @define_rop(Mv, Number, +, __radd__)
@@ -95,11 +131,18 @@ end
 @define_rop(Mv, Number, *, __rmul__)
 @define_lop(Mv, Number, /, __div__)
 @define_rop(Mv, Number, /, __rdiv__)
-@define_lop(Mv, Number, ^, __pow__)
 @define_lop(Mv, Number, ==, __eq__)
 @define_lop(Mv, Number, !=, __ne__)
 
--(x::Mv) = x.__neg__()
+@pure function ^(x::Mv, y::Integer)
+    if y < 0
+        x.__pow__(abs(y)).inv()
+    elseif y == 0
+        1
+    else
+        x.__pow__(y)
+    end
+end
 
 macro define_show(type)
     @eval begin
@@ -142,6 +185,10 @@ macro delegate_properties(type, obj_field)
 end
 
 @delegate_properties(Mv, :o)
+
+# Expose Python docstrings to the Julia doc system
+Docs.getdoc(x::Mv) = Text(convert(String, x."__doc__"))
+Docs.Binding(x::Mv, s::Symbol) = getproperty(x, s)
 
 function __init__()
     copy!(galgebra, PyCall.pyimport_conda("galgebra", "galgebra"))

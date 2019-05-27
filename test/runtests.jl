@@ -28,6 +28,31 @@ const vector = py"vector"
     C = V.mv("C", "mv")
     D = V.mv("D", "mv")
     G = V.mv("G", "grade", 2)
+    R = V.mv("R", "spinor")
+    I = V.I()
+
+    # The following tests verified implementation correctness per definition
+
+    @test u ⋅ v == u | v == (u < v) == (u > v) == u ⨼ v == u ⨽ v == u ⨰ v
+    @test u ∧ v == u ⨱ v
+    @test v ⨼ B == (v < B)
+    @test v ⨽ B == (v > B)
+    @test A ⨰ B == A << B == (A * B + B * A) / 2
+    # @test A ×̄ B == A ⨰ B
+    @test A ⨱ B == A >> B == (A * B - B * A) / 2
+    @test A ⊛ B == A % B
+
+    @test abs(v) == v.norm()
+    @test abs(R) == R.norm()
+    @test ~A == A.rev()
+    @test A' == adjoint(A) == A.dual() == A * I # Ga.dual_mode_value is default to "I+"
+    @test (v)⁻¹ == v^-1 == inv(v) == v.inv() == v / (v^2)
+    @test (R)⁻¹ == R^-1 == inv(R) == R.inv() == R / (R^2)
+
+    @test v^-2 == (v^2).inv()
+    @test R^-2 == (R^2).inv()
+    @test v^0 == 1
+    @test v^2 == v*v
 
     # The following tests verified many identities in Linear Algebra
 
@@ -46,45 +71,51 @@ const vector = py"vector"
     @test (-α) * v == α * (-v) == -α * v
 
     # The following tests verified many identities in https://arxiv.org/abs/1205.5935
-    @test u ⋅ v == u | v == (u < v) == (u > v)
-    @test v ⨼ B == (v < B)
-    @test v ⨽ B == (v > B)
 
     @test v * v == (v * v).scalar()
     @test v * B == v ⋅ B + v ∧ B == v ⨼ B + v ∧ B
-    @test u ⋅ v == u ⨼ v == u ⨽ v == u ⨰ v
-    @test u ∧ v == u ⨱ v
+
+    @test u ∧ (v + λ * u) == u ∧ v
     
-    @test v == v.get_grade(1)
-    @test G == G.get_grade(2)
+    @test v == v[1]
+    @test G == G[2]
 
-    for r = 0:4
-        @test (A + B).get_grade(r) == A.get_grade(r) + B.get_grade(r)
-        @test (λ * A).get_grade(r) == (A * λ).get_grade(r) == λ * A.get_grade(r)
+    dim_range = range(0, stop=V.n)
 
-        Ar = A.get_grade(r)
+    for r ∈ dim_range
+        @test (A + B)[r] == A[r] + B[r]
+        @test (λ * A)[r] == (A * λ)[r] == λ * A[r]
+
+        Ar = A[r]
 
         @test v ⨼ Ar == (v * Ar - (-1)^r * Ar * v) / 2
         @test Ar ⨽ v == (Ar * v - (-1)^r * v * Ar) / 2 == (-1)^(r-1) * (v ⨼ Ar)
         @test v ∧ Ar == (v * Ar + (-1)^r * Ar * v) / 2
         @test Ar ∧ v == (Ar * v + (-1)^r * v * Ar) / 2 == (-1)^r * (v ∧ Ar)
 
-        @test v ⨼ Ar == (v * Ar).get_grade(r-1)
-        @test v ∧ Ar == (v * Ar).get_grade(r+1)
-        @test Ar ⨽ v == (Ar * v).get_grade(r-1)
-        @test Ar ∧ v == (Ar * v).get_grade(r+1)
+        @test v ⨼ Ar == (v * Ar)[r-1]
+        @test v ∧ Ar == (v * Ar)[r+1]
+        @test Ar ⨽ v == (Ar * v)[r-1]
+        @test Ar ∧ v == (Ar * v)[r+1]
         @test v * Ar == v ⨼ Ar + v ∧ Ar
         @test Ar * v == Ar ⨽ v + Ar ∧ v
 
-        Br = B.get_grade(r)
+        Br = B[r]
         Ar ⨼ Br == Ar ⨽ Br == (Ar * Br).scalar()
 
-        for s = 0:4
-            @test A.get_grade(r).get_grade(s) == (if r == s; A.get_grade(r) else 0 end)
+        for s ∈ dim_range
+            @test A[r][s] == (if r == s; A[r] else 0 end)
 
-            Bs = B.get_grade(s)
+            Bs = B[s]
             ArBs = Ar * Bs
-            @test ArBs == sum([ArBs.get_grade(abs(r - s) + 2 * j) for j=0:min(r, s)])
+
+            @test ArBs == sum([ArBs[abs(r - s) + 2j] for j=0:min(r, s)])
+            @test Ar ⨼ Bs == (-1)^(r * (s - 1)) * Bs ⨽ Ar
+            @test Ar ∧ Bs == (-1)^(r * s) * Bs ∧ Ar
+
+            for j ∈ dim_range
+                @test ArBs[r + s - 2j] == (-1)^(r * s - j) * (B[s] * A[r])[r + s - 2j]
+            end
 
             @test v ⨼ ArBs == (v * ArBs - (-1)^(r+s) * ArBs * v)/2 ==
                 (v ⨼ Ar) * Bs + (-1)^r * Ar * (v ⨼ Bs) == 
@@ -101,25 +132,26 @@ const vector = py"vector"
                 @test Ar ⨼ Bs == Bs ⨽ Ar == 0
             end
 
-            for t in 0:4
-                Ct = C.get_grade(t)
+            for t ∈ dim_range
+                Ct = C[t]
 
-                Ar ∧ (Bs ∧ Ct) == (Ar * Bs * Ct).get_grade(r + s + t)
+                Ar ∧ (Bs ∧ Ct) == (Ar * Bs * Ct)[r + s + t]
             end
         end
     end
 
-    @test A == sum([A.get_grade(r) for r in 0:4])
-    @test A.get_grade(-3) == 0
+    @test A == sum([A[r] for r ∈ dim_range])
+    @test A[-3] == 0
 
     @test v ⨼ A.even() == - (A.even() ⨽ v)
     @test v ⨼ A.odd() == A.odd() ⨽ v
     @test v ∧ A.even() == A.even() ∧ v
     @test v ∧ A.odd() == - (A.odd() ∧ v)
 
-    @test A ⨼ B == sum([sum([(A.get_grade(r) * B.get_grade(s)).get_grade(s - r) for r in 0:4]) for s in 0:4])
-    @test A ⨽ B == sum([sum([(A.get_grade(r) * B.get_grade(s)).get_grade(r - s) for r in 0:4]) for s in 0:4])
-    @test A ∧ B == sum([sum([(A.get_grade(r) * B.get_grade(s)).get_grade(r + s) for r in 0:4]) for s in 0:4])
+    @test (A * B).scalar() == (B * A).scalar() == (~A * ~B).scalar()
+    @test A ⨼ B == sum([sum([(A[r] * B[s])[s - r] for r ∈ dim_range]) for s ∈ dim_range])
+    @test A ⨽ B == sum([sum([(A[r] * B[s])[r - s] for r ∈ dim_range]) for s ∈ dim_range])
+    @test A ∧ B == sum([sum([(A[r] * B[s])[r + s] for r ∈ dim_range]) for s ∈ dim_range])
 
     @test (A ∧ B) ∧ C == A ∧ (B ∧ C) == A ∧ B ∧ C
     @test A ⨼ (B ⨽ C) == (A ⨼ B) ⨽ C
@@ -129,25 +161,25 @@ const vector = py"vector"
 
     @test u ∧ A ∧ v == - v ∧ A ∧ u
 
-    @test A ⨰ B == A << B == (A * B + B * A) / 2
-    @test A ⨱ B == A >> B == (A * B - B * A) / 2
-
+    @test A * B == A ⨱ B + A ⨰ B
     @test A ⨰ B == B ⨰ A
     @test A ⨱ B == - B ⨱ A
 
     @test A ⊛ B == B ⊛ A
-    @test A ⊛ B == A.dual() ⊛ B.dual()
-    @test A ⊛ B == A.rev() ⊛ B.rev()
-    @test A ⊛ (B * C) == (B.rev() * A) ⊛ C
-    @test A ⊛ (B ⨽ C) == (B.rev() ⨽ A) ⊛ C
-    @test A ⊛ (B ⨼ C) == (B.rev() ∧ A) ⊛ C
-    @test A ⊛ (B ∧ C) == (B.rev() ⨼ A) ⊛ C
+    @test A ⊛ B == A' ⊛ B' == A.dual() ⊛ B.dual()
+    @test A ⊛ B == ~A ⊛ ~B == A.rev() ⊛ B.rev()
+    @test A ⊛ (B * C) == (~B * A) ⊛ C
+    @test A ⊛ (B ⨽ C) == (~B ⨽ A) ⊛ C
+    @test A ⊛ (B ⨼ C) == (~B ∧ A) ⊛ C
+    @test A ⊛ (B ∧ C) == (~B ⨼ A) ⊛ C
 
     @test A * B ⋅ C ∧ D == ((A * B) ⋅ C) ∧ D
 
     @test u.dual() == u * V.I()
     @test v.project_in_blade(u) == (v ⋅ u) / u == (v ⨼ u) ⨼ u.inv()
     @test v.project_in_blade(w) + u.project_in_blade(w) == (u + v).project_in_blade(w)
+
+    # The following tests verified interoperability with numeric and symbolic numbers
 
     uu = vector(V, [1, 2, 3])
     vv = vector(V, [4, 5, 6])

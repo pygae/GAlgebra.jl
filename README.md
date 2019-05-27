@@ -37,6 +37,9 @@ using GAlgebra
 
 v = o3d.mv("v", "vector")
 A = o3d.mv("A", "mv")
+R = o3d.mv("R", "spinor")
+# Volume element
+I = o3d.I()
 
 # Wedge product: \wedge
 v ∧ A
@@ -48,10 +51,30 @@ v ⨼ A
 v ⨽ A
 # Scalar product: \circledast A ⊛ B = <A B†>
 v ⊛ A
-# Anti-comutator product: \dottimes  A⨰B = (AB+BA)/2
-v ⨰ A
 # Comutator product: \timesbar  A⨱B = (AB-BA)/2
 v ⨱ A
+# Anti-comutator product: \dottimes  A⨰B = (AB+BA)/2
+v ⨰ A
+
+# Norm: abs(A) = |A| = A.norm()
+abs(v)
+# Inverse: (A)⁻¹ = A^-1 = A.inv()
+(R)⁻¹
+R^-1
+# Reverse: ~A = A† = A.rev()
+~A
+# Dual: A' = A * I
+# note: Ga.dual_mode_value is default to "I+"
+A'
+
+# Grade-i part: A[i] = <A>_i = A.grade(i)
+A[2]
+# Scalar (grade-0) part: <A> = <A>_0 = A.scalar()
+A.scalar()
+# Even-grade part: <A>_+ = A.even()
+A.even()
+# Odd-grade part: <A>_- = A.odd()
+A.odd()
 ```
 
 Note: enter unicode symbols like `∧` with corresponding LaTeX like `\wedge` by [Tab completion](https://pkg.julialang.org/docs/julia/THl1k/1.1.0/manual/unicode-input.html).
@@ -84,7 +107,7 @@ Then you'll see something like:
    Testing GAlgebra
  Resolving package versions...
 Test Summary: | Pass  Total
-GAlgebra.jl   |  300    300
+GAlgebra.jl   |  330    330
    Testing GAlgebra tests passed
 ```
 
