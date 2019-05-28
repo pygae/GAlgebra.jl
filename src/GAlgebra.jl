@@ -198,7 +198,9 @@ export ⋅, ∧, ⨼, ⨽, ⨰, ⨱, ⊛, ×
 # A^† is usually used in literature, but \dagger is reserved by Julia
 @define_unary_op(Mv, ~, rev)
 @define_unary_op(Mv, rev, rev)
-@define_postfix_op(Mv, ᵀ, rev)
+
+# @deprecated
+# @define_postfix_op(Mv, ᵀ, rev)
 
 # Dual: A' = A * I
 # note: Ga.dual_mode_value is default to "I+"
@@ -206,19 +208,19 @@ export ⋅, ∧, ⨼, ⨽, ⨰, ⨱, ⊛, ×
 # A^⊥ (\bot) is sometimes used in literature
 @define_unary_op(Mv, adjoint, dual)
 
-export involution, conjugate, proj, refl, rot, exp_with_hint
+export rev, involute, proj, refl, rot, exp_with_hint
 
 # Grade involution: \^-
 # (A)⁻ = A+ - A-
 # A^* is usually used in literature but * and ∗(\ast) both parsed as binary operator in Julia
-@pure involution(x::Mv) = x.even() - x.odd()
-@define_postfix_op(Mv, ⁻, involution)
+@pure involute(x::Mv) = x.even() - x.odd()
+@define_postfix_op(Mv, ⁻, involute)
 
 # Clifford conjugate: \doublepipe
 # (A)ǂ = ((A)^*)^†
 # A^‡ is usually used in literature but \ddagger is reserved by Julia
-@pure conjugate(x::Mv) = involution(x).rev()
-@define_postfix_op(Mv, ǂ, conjugate)
+@pure Base.conj(x::Mv) = involute(x).rev()
+@define_postfix_op(Mv, ǂ, conj)
 
 # Grade-i part: A[i] = <A>_i = A.grade(i)
 @pure getindex(x::Mv, i::Integer) = x.grade(i)

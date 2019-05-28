@@ -65,9 +65,8 @@ const vector = py"vector"
 
     @test (v)⁻¹ == v^-1
     @test (R)⁻¹ == R^-1
-    @test (A)⁻ == involution(A) == A.even() - A.odd()
-    @test (A)ᵀ == A.rev()
-    @test (A)ǂ == involution(A).rev()
+    @test (A)⁻ == involute(A) == A.even() - A.odd()
+    @test (A)ǂ == conj(A) == involute(A).rev()
     @test proj(u, v) == v.project_in_blade(u)
     @test refl(u, v) == v.reflect_in_blade(u)
     @test rot(u ∧ v, A) == A.rotate_multivector(u ∧ v)
@@ -181,7 +180,7 @@ const vector = py"vector"
     @test v ∧ A.odd() == - (A.odd() ∧ v)
 
     @test (A * B).scalar() == (B * A).scalar() == (~A * ~B).scalar() == 
-        ((A)⁻ * (B)⁻).scalar() == ((A)ᵀ * (B)ᵀ).scalar() == ((A)ǂ * (B)ǂ).scalar()            # A.4.3-6
+        ((A)⁻ * (B)⁻).scalar() == ((A)ǂ * (B)ǂ).scalar()                                      # A.4.3-6
 
     @test A ⨼ B == sum([sum([(A[r] * B[s])[s - r] for r ∈ dimV]) for s ∈ dimV])             # A.4.7
     @test A ⨽ B == sum([sum([(A[r] * B[s])[r - s] for r ∈ dimV]) for s ∈ dimV])             # A.4.8

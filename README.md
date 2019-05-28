@@ -42,50 +42,52 @@ R = o3d.mv("R", "spinor")
 # Volume element
 I = o3d.I()
 
-# Wedge product: \wedge
+# Wedge product: ∧ \wedge
 v ∧ A
-# Hestene's inner product: \cdot
+# Hestene's inner product: ⋅ \cdot
 v ⋅ A
-# Left contraction: \intprod
+# Left contraction: ⨼ \intprod
 v ⨼ A
-# Right contraction: \intprodr
+# Right contraction: ⨽ \intprodr
 v ⨽ A
-# Scalar product: \circledast A ⊛ B = <A B†>
+# Scalar product: ⊛ \circledast
+# A ⊛ B = <A B†>
 v ⊛ A
-# Comutator product: \timesbar
+# Comutator product: ⨱ \timesbar
 # A⨱B = (AB-BA)/2
 v ⨱ A
-# Anti-comutator product: \dottimes
+# Anti-comutator product: ⨰ \dottimes
 # A⨰B = (AB+BA)/2
 v ⨰ A
 
-# Norm: abs(A) = |A| = A.norm()
+# Norm: abs(A) = A.norm()
 abs(v)
 
-# Inverse: \^-\^1
+# Inverse: postfix ⁻¹ \^-\^1
 # (A)⁻¹ = A^-1 = A.inv()
 (R)⁻¹
 R^-1
 
-# Reversion: ~A = A.rev()
+# Reversion: ~A = rev(A) = A.rev()
 # A^† is usually used in literature
 ~A
 
-# Dual: A' = A * I
-# note: Ga.dual_mode_value is default to "I+"
+# Dual: postfix '
+# orthogonal complement, Λ^p -> Λ^(n-p)
+# note: Ga.dual_mode_value is default to "I+", so A' = A * I
 # change Ga.dual_mode_value to get a different definition
 A'
 
-# Grade involution: \^-
-# (A)⁻ = A+ - A-
-# A* is usually used in literature
+# Grade involution: postfix ⁻ \^-
+# (A)⁻ = involute(A) = A+ - A-
+# A^* is usually used in literature
 (A)⁻
-involution(A)
+involute(A)
 
-# Clifford conjugate: \doublepipe
+# Clifford conjugate: postfix ǂ \doublepipe
 # (A)ǂ = ((A)^*)^†
 (A)ǂ
-conjugate(A)
+conj(A)
 
 # Projection: proj(B, A) = A.project_in_blade(B)
 proj(u, v)
