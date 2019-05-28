@@ -11,7 +11,6 @@ def vector(ga, components):
 const vector = py"vector"
 
 @testset "GAlgebra.jl" begin
-    # Write your own tests here.
     (x, y, z) = xyz = symbols("x,y,z",real=true)
     (o3d, ex, ey, ez) = galgebra.ga.Ga.build("e", g=[1, 1, 1], coords=xyz)
 
@@ -51,26 +50,30 @@ const vector = py"vector"
     @test_throws PyCall.PyError A × B
 
     @test -v == -1 * v
-    @test abs(v) == v.norm()
-    @test abs(R) == R.norm()
-    @test ~A == A.rev()
-    @test A' == adjoint(A) == A.dual() == A * I # Ga.dual_mode_value is default to "I+"
-    @test v^-1 == inv(v) == v.inv() == v / (v^2)
-    @test R^-1 == inv(R) == R.inv() == R / (R^2)
-
-    @test v^-2 == (v^2).inv()
-    @test R^-2 == (R^2).inv()
     @test v^0 == 1
     @test v^2 == v*v
+    @test v^-2 == (v^2).inv()
+    @test R^-2 == (R^2).inv()
 
-    @test (v)⁻¹ == v^-1
-    @test (R)⁻¹ == R^-1
+    @test abs(v) == v.norm()
+    @test abs(R) == R.norm()
+    @test ~A == rev(A) == A.rev()
+    @test A' == dual(A) == A.dual() == adjoint(A) == A * I # Ga.dual_mode_value is default to "I+"
     @test (A)⁻ == involute(A) == A.even() - A.odd()
     @test (A)ǂ == conj(A) == involute(A).rev()
+    @test (v)⁻¹ == v^-1 == inv(v) == v.inv() == v / (v^2)
+    @test (R)⁻¹ == R^-1 == inv(R) == R.inv() == R / (R^2)
+
     @test proj(u, v) == v.project_in_blade(u)
     @test refl(u, v) == v.reflect_in_blade(u)
     @test rot(u ∧ v, A) == A.rotate_multivector(u ∧ v)
     @test exp(u ∧ v) == (u ∧ v).exp()
+
+    @test scalar(A) == A.scalar() == A[0].obj
+    @test typeof(scalar(A)) == Sym
+    @test typeof(A[0]) == Mv
+    @test even(A) == A.even()
+    @test odd(A) == A.odd()
 
     for r ∈ dimV
         A[r] == A.grade(r) == A.get_grade(r)

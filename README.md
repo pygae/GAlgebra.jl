@@ -35,7 +35,7 @@ using GAlgebra
 (x, y, z) = xyz = symbols("x,y,z",real=true)
 (o3d, ex, ey, ez) = galgebra.ga.Ga.build("e", g=[1, 1, 1], coords=xyz)
 
-u = V.mv("u", "vector")
+u = o3d.mv("u", "vector")
 v = o3d.mv("v", "vector")
 A = o3d.mv("A", "mv")
 R = o3d.mv("R", "spinor")
@@ -64,28 +64,31 @@ v ⨰ A
 abs(v)
 
 # Inverse: postfix ⁻¹ \^-\^1
-# (A)⁻¹ = A^-1 = A.inv()
+# (A)⁻¹ = A^-1 = inv(A) = A.inv()
 (R)⁻¹
 R^-1
+inv(R)
 
 # Reversion: ~A = rev(A) = A.rev()
 # A^† is usually used in literature
 ~A
+rev(A)
 
 # Dual: postfix '
 # orthogonal complement, Λ^p -> Λ^(n-p)
 # note: Ga.dual_mode_value is default to "I+", so A' = A * I
 # change Ga.dual_mode_value to get a different definition
 A'
+dual(A)
 
 # Grade involution: postfix ⁻ \^-
-# (A)⁻ = involute(A) = A+ - A-
+# (A)⁻ = involute(A) := A+ - A- = A.even() - A.odd()
 # A^* is usually used in literature
 (A)⁻
 involute(A)
 
 # Clifford conjugate: postfix ǂ \doublepipe
-# (A)ǂ = ((A)^*)^†
+# (A)ǂ = conj(A) := ((A)^*)^†
 (A)ǂ
 conj(A)
 
@@ -95,23 +98,24 @@ proj(u, v)
 # Reflection: refl(B, A) = A.reflect_in_blade(B)
 refl(u, v)
 
+# Rotation: rot(itheta, A) = A.rotate_multivector(itheta)
+# rotate the multivector A by the 2-blade itheta
+rot(u ∧ v, A)
+
 # Natural base exponential of x: e^x
 exp(u ∧ v)
 
-# Rotate by the 2-blade R the multivector A
-rot(u ∧ v, A)
-
-# Grade-i part: A[i] = <A>_i = A.grade(i)
+# Grade-i part: A[i] = A.grade(i) := <A>_i
 A[2]
 
-# Scalar (grade-0) part: <A> = <A>_0 = A.scalar()
-A.scalar()
+# Scalar (grade-0) part: scalar(A) = A.scalar() := <A> = <A>_0
+scalar(A)
 
-# Even-grade part: A+ = A.even()
-A.even()
+# Even-grade part: even(A) = A.even() := A+
+even(A)
 
-# Odd-grade part: A- = A.odd()
-A.odd()
+# Odd-grade part: odd(A) = A.odd() := A-
+odd(A)
 ```
 
 Note: enter unicode symbols like `∧` with corresponding LaTeX like `\wedge` by [Tab completion](https://pkg.julialang.org/docs/julia/THl1k/1.1.0/manual/unicode-input.html).
@@ -144,7 +148,7 @@ Then you'll see something like:
    Testing GAlgebra
  Resolving package versions...
 Test Summary: | Pass  Total
-GAlgebra.jl   |  352    352
+GAlgebra.jl   |  354    354
    Testing GAlgebra tests passed
 ```
 
