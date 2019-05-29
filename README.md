@@ -44,7 +44,7 @@ I = o3d.I()
 
 # Wedge product: ∧ \wedge
 v ∧ A
-# Hestene's inner product: ⋅ \cdot
+# Hestenes' inner product: ⋅ \cdot
 v ⋅ A
 # Left contraction: ⨼ \intprod
 v ⨼ A
@@ -53,10 +53,10 @@ v ⨽ A
 # Scalar product: ⊛ \circledast
 # A ⊛ B = <A B†>
 v ⊛ A
-# Comutator product: ⨱ \timesbar
+# Commutator product: ⨱ \timesbar
 # A⨱B = (AB-BA)/2
 v ⨱ A
-# Anti-comutator product: ⨰ \dottimes
+# Anti-commutator product: ⨰ \dottimes
 # A⨰B = (AB+BA)/2
 v ⨰ A
 

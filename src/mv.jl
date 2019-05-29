@@ -57,7 +57,7 @@ end
 
 # Wedge product: \wedge
 @define_op(Mv, ∧, __xor__)
-# Hestene's inner product: \cdot
+# Hestenes' inner product: ⋅ \cdot
 @define_op(Mv, ⋅, __or__)
 @define_op(Mv, |, __or__)
 # Left contraction: \intprod
@@ -66,22 +66,23 @@ end
 # Right contraction: \intprodr
 @define_op(Mv, ⨽, __gt__)
 @define_op(Mv, >, __gt__)
-# Anti-comutator product: \dottimes
+
+# Commutator product: ⨱ \timesbar
+# A⨱B = (AB-BA)/2
+@define_op(Mv, ⨱, __rshift__)
+@define_op(Mv, >>, __rshift__)
+
+# Anti-commutator product: ⨰ \dottimes
 # A⨰B = (AB+BA)/2
 @define_op(Mv, ⨰, __lshift__)
 @define_op(Mv, <<, __lshift__)
-
-# Cross product for vectors in 3D
-@pure ×(x::Mv, y::Mv) = mv.cross(x, y)
 
 # # experimental symbol for anti-comutator product: \bar\times
 # A×̄B = (AB+BA)/2
 # @define_op(Mv, ×̄, __lshift__)
 
-# Comutator product: \timesbar
-# A⨱B = (AB-BA)/2
-@define_op(Mv, ⨱, __rshift__)
-@define_op(Mv, >>, __rshift__)
+# Cross product for vectors in 3D
+@pure ×(x::Mv, y::Mv) = mv.cross(x, y)
 
 # Scalar product: \circledast
 # A ⊛ B = <A B†>
