@@ -34,10 +34,14 @@ export ⋅, ∧, ⨼, ⨽, ⨰, ⨱, ⊛, ×
 @define_postfix_symbol(⁻¹)
 # # \^T
 # @define_postfix_symbol(ᵀ)
+# \^x
+@define_postfix_symbol(ˣ)
 # \doublepipe
 @define_postfix_symbol(ǂ)
-# \^-
-@define_postfix_symbol(⁻)
+# \_+
+@define_postfix_symbol(₊)
+# \_-
+@define_postfix_symbol(₋)
 
 mutable struct Mv
     o::PyCall.PyObject
@@ -115,11 +119,11 @@ end
 @define_unary_op(Mv, Base.adjoint, dual)
 @define_unary_op(Mv, dual, dual)
 
-# Grade involution: \^-
-# (A)⁻ = A+ - A-
-# A^* is usually used in literature but * and ∗(\ast) both parsed as binary operator in Julia
+# Grade involution: postfix ˣ \^x
+# (A)ˣ = involute(A) := A+ - A- = A.even() - A.odd()
+# A^* is usually used in literature
 @pure involute(x::Mv) = x.even() - x.odd()
-@define_postfix_op(Mv, ⁻, involute)
+@define_postfix_op(Mv, ˣ, involute)
 
 # Clifford conjugate: \doublepipe
 # (A)ǂ = ((A)^*)^†
@@ -145,13 +149,16 @@ end
 @pure Base.getindex(x::Mv, i::Integer) = x.grade(i)
 
 # Scalar (grade-0) part: scalar(A) = A.scalar() := <A> = <A>_0
+# note: it returns a SymPy expression unlike A[0] which returns a Mv object
 @define_unary_op(Mv, scalar, scalar)
 
-# Even-grade part: even(A) = A.even() := A+
+# Even-grade part: (A)₊ = even(A) = A.even() := A+
 @define_unary_op(Mv, even, even)
+@define_postfix_op(Mv, ₊, even)
 
-# Odd-grade part: odd(A) = A.odd() := A-
+# Odd-grade part: (A)₋ = odd(A) = A.odd() := A-
 @define_unary_op(Mv, odd, odd)
+@define_postfix_op(Mv, ₋, odd)
 
 @define_lop(Mv, Number, +, __add__)
 @define_rop(Mv, Number, +, __radd__)

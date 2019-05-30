@@ -82,10 +82,10 @@ rev(A)
 A'
 dual(A)
 
-# Grade involution: postfix ⁻ \^-
-# (A)⁻ = involute(A) := A+ - A- = A.even() - A.odd()
+# Grade involution: postfix ˣ \^x
+# (A)ˣ = involute(A) := A+ - A- = A.even() - A.odd()
 # A^* is usually used in literature
-(A)⁻
+(A)ˣ
 involute(A)
 
 # Clifford conjugate: postfix ǂ \doublepipe
@@ -110,12 +110,13 @@ exp(u ∧ v)
 A[2]
 
 # Scalar (grade-0) part: scalar(A) = A.scalar() := <A> = <A>_0
+# note: it returns a SymPy expression unlike A[0] which returns a Mv object
 scalar(A)
 
-# Even-grade part: even(A) = A.even() := A+
+# Even-grade part: (A)₊ = even(A) = A.even() := A+
 even(A)
 
-# Odd-grade part: odd(A) = A.odd() := A-
+# Odd-grade part: (A)₋ = odd(A) = A.odd() := A-
 odd(A)
 ```
 

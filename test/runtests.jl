@@ -59,13 +59,13 @@ const vector = py"vector"
     @test abs(R) == norm(R) == R.norm()
     @test ~A == rev(A) == A.rev()
     @test A' == dual(A) == A.dual() == adjoint(A) == A * I # Ga.dual_mode_value is default to "I+"
-    @test (A)⁻ == involute(A) == A.even() - A.odd()
+    @test (A)ˣ == involute(A) == A.even() - A.odd()
     @test (A)ǂ == conj(A) == involute(A).rev()
     @test (v)⁻¹ == v^-1 == inv(v) == v.inv() == (~v) / norm(v)^2 == v / v^2 
     @test (R)⁻¹ == R^-1 == inv(R) == R.inv() == (~R) / norm(R)^2 == R / R^2
-    @test ((A)⁻)⁻ == ~(~A) == ((A)ǂ)ǂ == A
-    @test ~((A)⁻) == (~A)⁻
-    @test ((R)⁻¹)⁻ == ((R)⁻)⁻¹
+    @test ((A)ˣ)ˣ == ~(~A) == ((A)ǂ)ǂ == A
+    @test ~((A)ˣ) == (~A)ˣ
+    @test ((R)⁻¹)ˣ == ((R)ˣ)⁻¹
     @test ((R)⁻¹)ǂ == ((R)ǂ)⁻¹
 
     @test proj(u, v) == v.project_in_blade(u)
@@ -73,11 +73,11 @@ const vector = py"vector"
     @test rot(u ∧ v, A) == A.rotate_multivector(u ∧ v)
     @test exp(u ∧ v) == (u ∧ v).exp()
 
-    @test scalar(A) == A.scalar() == A[0].obj
     @test typeof(scalar(A)) == Sym
     @test typeof(A[0]) == Mv
-    @test even(A) == A.even()
-    @test odd(A) == A.odd()
+    @test scalar(A) == A.scalar() == A[0].obj
+    @test (A)₊ == even(A) == A.even()
+    @test (A)₋ == odd(A) == A.odd()
 
     for r ∈ dimV
         A[r] == A.grade(r) == A.get_grade(r)
@@ -170,16 +170,16 @@ const vector = py"vector"
     @test A == sum([A[r] for r ∈ dimV])
     @test A[-3] == 0
 
-    @test v ⨼ A == (v * A - (A)⁻ * v)/2                                                      # A.4.13
-    @test v ∧ A == (v * A + (A)⁻ * v)/2                                                      # A.4.14
-    @test A ⨽ v == - v ⨼ (A)⁻                                                                # A.4.15
-    @test A ∧ v == v ∧ (A)⁻                                                                  # A.4.16
+    @test v ⨼ A == (v * A - (A)ˣ * v)/2                                                      # A.4.13
+    @test v ∧ A == (v * A + (A)ˣ * v)/2                                                      # A.4.14
+    @test A ⨽ v == - v ⨼ (A)ˣ                                                                # A.4.15
+    @test A ∧ v == v ∧ (A)ˣ                                                                  # A.4.16
 
-    @test v ⨼ (A * B) == (v ⨼ A) * B + (A)⁻ * (v ⨼ B) == (v ∧ A) * B - (A)⁻ * (v ∧ B)       # A.4.18-19
-    @test v ∧ (A * B) == (v ∧ A) * B - (A)⁻ * (v ⨼ B) == (v ⨼ A) * B + (A)⁻ * (v ∧ B)       # A.4.20-21
-    @test v ⨼ (A ∧ B) == (v ⨼ A) ∧ B + (A)⁻ ∧ (v ⨼ B)                                       # A.4.22
-    @test v ∧ (A ⨽ B) == (v ∧ A) ⨽ B - (A)⁻ ⨽ (v ⨼ B)                                       # A.4.23
-    @test v ∧ (A ⨼ B) == (v ⨼ A) ⨼ B + (A)⁻ ⨼ (v ∧ B)                                       # A.4.24
+    @test v ⨼ (A * B) == (v ⨼ A) * B + (A)ˣ * (v ⨼ B) == (v ∧ A) * B - (A)ˣ * (v ∧ B)       # A.4.18-19
+    @test v ∧ (A * B) == (v ∧ A) * B - (A)ˣ * (v ⨼ B) == (v ⨼ A) * B + (A)ˣ * (v ∧ B)       # A.4.20-21
+    @test v ⨼ (A ∧ B) == (v ⨼ A) ∧ B + (A)ˣ ∧ (v ⨼ B)                                       # A.4.22
+    @test v ∧ (A ⨽ B) == (v ∧ A) ⨽ B - (A)ˣ ⨽ (v ⨼ B)                                       # A.4.23
+    @test v ∧ (A ⨼ B) == (v ⨼ A) ⨼ B + (A)ˣ ⨼ (v ∧ B)                                       # A.4.24
 
     @test v ⨼ A.even() == - (A.even() ⨽ v)
     @test v ⨼ A.odd() == A.odd() ⨽ v
@@ -187,7 +187,7 @@ const vector = py"vector"
     @test v ∧ A.odd() == - (A.odd() ∧ v)
 
     @test (A * B).scalar() == (B * A).scalar() == (~A * ~B).scalar() == 
-        ((A)⁻ * (B)⁻).scalar() == ((A)ǂ * (B)ǂ).scalar()                                      # A.4.3-6
+        ((A)ˣ * (B)ˣ).scalar() == ((A)ǂ * (B)ǂ).scalar()                                      # A.4.3-6
 
     @test A ⨼ B == sum([sum([(A[r] * B[s])[s - r] for r ∈ dimV]) for s ∈ dimV])             # A.4.7
     @test A ⨽ B == sum([sum([(A[r] * B[s])[r - s] for r ∈ dimV]) for s ∈ dimV])             # A.4.8
