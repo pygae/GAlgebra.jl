@@ -12,7 +12,7 @@ import Base: abs, inv, adjoint, exp, getindex
 
 export Mv
 
-export rev, dual, involute, proj, refl, rot, exp_with_hint, scalar, even, odd
+export norm, rev, dual, involute, proj, refl, rot, exp_with_hint, scalar, even, odd
 # export \cdot, \wedge, \intprod, \intprodr, \dottimes, \timesbar, \circledast, \times
 export ⋅, ∧, ⨼, ⨽, ⨰, ⨱, ⊛, ×
 # Operator precedence: they have the same precedence, unlike in math
@@ -91,8 +91,9 @@ end
 
 @define_unary_op(Mv, -, __neg__)
 
-# Norm: abs(A) = |A| = A.norm()
+# Norm: abs(A) = norm(A) = A.norm() := ||A||
 @define_unary_op(Mv, Base.abs, norm)
+@define_unary_op(Mv, norm, norm)
 
 # Inverse: \^-\^1
 # (A)⁻¹ = A^-1 = A.inv()

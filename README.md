@@ -21,7 +21,7 @@ GAlgebra.jl itself doesn't depend on [SymPy.jl](https://github.com/JuliaPy/SymPy
 
 After installing SymPy.jl and GAlgebra.jl (see below for instructions), you may experiment with GAlgebra.jl just like in the Python version of GAlgebra (though there're some syntax differences like `True`/`true`, `'`/`"` etc. between Python and Julia).
 
-For example, you may:
+For example, you may start with:
 
 ```julia
 import SymPy: symbols, sympy, Sym
@@ -60,7 +60,8 @@ v ⨱ A
 # A⨰B = (AB+BA)/2
 v ⨰ A
 
-# Norm: abs(A) = A.norm()
+# Norm: abs(A) = norm(A) = A.norm() := ||A||
+norm(v)
 abs(v)
 
 # Inverse: postfix ⁻¹ \^-\^1
@@ -118,7 +119,7 @@ even(A)
 odd(A)
 ```
 
-Note: enter unicode symbols like `∧` with corresponding LaTeX like `\wedge` by [Tab completion](https://pkg.julialang.org/docs/julia/THl1k/1.1.0/manual/unicode-input.html).
+Note: enter unicode symbols like `∧` with corresponding LaTeX commands like `\wedge` by [Tab completion](https://pkg.julialang.org/docs/julia/THl1k/1.1.0/manual/unicode-input.html) which are provided in the comments.
 
 So far only `galgebra.ga.Ga` and `galgebra.mv.Mv` have been verified to work in Julia, see [tests](https://github.com/pygae/GAlgebra.jl/tree/master/test/runtests.jl). The tests verified many identities in Linear Algebra and Geometric Algebra.
 
@@ -148,7 +149,7 @@ Then you'll see something like:
    Testing GAlgebra
  Resolving package versions...
 Test Summary: | Pass  Total
-GAlgebra.jl   |  354    354
+GAlgebra.jl   |  358    358
    Testing GAlgebra tests passed
 ```
 

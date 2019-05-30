@@ -55,14 +55,18 @@ const vector = py"vector"
     @test v^-2 == (v^2).inv()
     @test R^-2 == (R^2).inv()
 
-    @test abs(v) == v.norm()
-    @test abs(R) == R.norm()
+    @test abs(v) == norm(v) == v.norm()
+    @test abs(R) == norm(R) == R.norm()
     @test ~A == rev(A) == A.rev()
     @test A' == dual(A) == A.dual() == adjoint(A) == A * I # Ga.dual_mode_value is default to "I+"
     @test (A)⁻ == involute(A) == A.even() - A.odd()
     @test (A)ǂ == conj(A) == involute(A).rev()
-    @test (v)⁻¹ == v^-1 == inv(v) == v.inv() == v / (v^2)
-    @test (R)⁻¹ == R^-1 == inv(R) == R.inv() == R / (R^2)
+    @test (v)⁻¹ == v^-1 == inv(v) == v.inv() == (~v) / norm(v)^2 == v / v^2 
+    @test (R)⁻¹ == R^-1 == inv(R) == R.inv() == (~R) / norm(R)^2 == R / R^2
+    @test ((A)⁻)⁻ == ~(~A) == ((A)ǂ)ǂ == A
+    @test ~((A)⁻) == (~A)⁻
+    @test ((R)⁻¹)⁻ == ((R)⁻)⁻¹
+    @test ((R)⁻¹)ǂ == ((R)ǂ)⁻¹
 
     @test proj(u, v) == v.project_in_blade(u)
     @test refl(u, v) == v.reflect_in_blade(u)
