@@ -83,7 +83,7 @@ A'
 dual(A)
 
 # Grade involution: postfix ˣ \^x
-# (A)ˣ = involute(A) := A+ - A- = A.even() - A.odd()
+# (A)ˣ = A[:*] = involute(A) := A+ - A- = A.even() - A.odd()
 # A^* is usually used in literature
 (A)ˣ
 involute(A)
@@ -113,10 +113,12 @@ A[2]
 # note: it returns a SymPy expression unlike A[0] which returns a Mv object
 scalar(A)
 
-# Even-grade part: (A)₊ = even(A) = A.even() := A+
+# Even-grade part: A[:+] = (A)₊ = even(A) = A.even() := A+
+A[:+]
 even(A)
 
-# Odd-grade part: (A)₋ = odd(A) = A.odd() := A-
+# Odd-grade part: A[:-] = (A)₋ = odd(A) = A.odd() := A-
+A[:-]
 odd(A)
 ```
 

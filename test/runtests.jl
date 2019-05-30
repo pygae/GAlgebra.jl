@@ -57,13 +57,13 @@ const vector = py"vector"
 
     @test abs(v) == norm(v) == v.norm()
     @test abs(R) == norm(R) == R.norm()
-    @test ~A == rev(A) == A.rev()
+    @test ~A == A[:~] == rev(A) == A.rev()
     @test A' == dual(A) == A.dual() == adjoint(A) == A * I # Ga.dual_mode_value is default to "I+"
-    @test (A)ˣ == involute(A) == A.even() - A.odd()
-    @test (A)ǂ == conj(A) == involute(A).rev()
-    @test (v)⁻¹ == v^-1 == inv(v) == v.inv() == (~v) / norm(v)^2 == v / v^2 
-    @test (R)⁻¹ == R^-1 == inv(R) == R.inv() == (~R) / norm(R)^2 == R / R^2
-    @test ((A)ˣ)ˣ == ~(~A) == ((A)ǂ)ǂ == A
+    @test (A)ˣ == A[:*] == involute(A) == (A)₊ - (A)₋ == A[:+] - A[:-] == A.even() - A.odd()
+    @test (A)ǂ == A[:ǂ] == conj(A) == involute(A).rev()
+    @test (v)⁻¹ == v[:⁻¹] == v^-1 == inv(v) == v.inv() == (~v) / norm(v)^2 == v / v^2 
+    @test (R)⁻¹ == R[:⁻¹] == R^-1 == inv(R) == R.inv() == (~R) / norm(R)^2 == R / R^2
+    @test ((A)ˣ)ˣ == ~(~A) == A[:~][:~] == ((A)ǂ)ǂ == A
     @test ~((A)ˣ) == (~A)ˣ
     @test ((R)⁻¹)ˣ == ((R)ˣ)⁻¹
     @test ((R)⁻¹)ǂ == ((R)ǂ)⁻¹
@@ -76,8 +76,8 @@ const vector = py"vector"
     @test typeof(scalar(A)) == Sym
     @test typeof(A[0]) == Mv
     @test scalar(A) == A.scalar() == A[0].obj
-    @test (A)₊ == even(A) == A.even()
-    @test (A)₋ == odd(A) == A.odd()
+    @test (A)₊ == A[:+] == even(A) == A.even()
+    @test (A)₋ == A[:-] == odd(A) == A.odd()
 
     for r ∈ dimV
         A[r] == A.grade(r) == A.get_grade(r)
@@ -181,10 +181,10 @@ const vector = py"vector"
     @test v ∧ (A ⨽ B) == (v ∧ A) ⨽ B - (A)ˣ ⨽ (v ⨼ B)                                       # A.4.23
     @test v ∧ (A ⨼ B) == (v ⨼ A) ⨼ B + (A)ˣ ⨼ (v ∧ B)                                       # A.4.24
 
-    @test v ⨼ A.even() == - (A.even() ⨽ v)
-    @test v ⨼ A.odd() == A.odd() ⨽ v
-    @test v ∧ A.even() == A.even() ∧ v
-    @test v ∧ A.odd() == - (A.odd() ∧ v)
+    @test v ⨼ A[:+] == - (A[:+] ⨽ v)
+    @test v ⨼ A[:-] == A[:-] ⨽ v
+    @test v ∧ A[:+] == A[:+] ∧ v
+    @test v ∧ A[:-] == - (A[:-] ∧ v)
 
     @test (A * B).scalar() == (B * A).scalar() == (~A * ~B).scalar() == 
         ((A)ˣ * (B)ˣ).scalar() == ((A)ǂ * (B)ǂ).scalar()                                      # A.4.3-6

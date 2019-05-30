@@ -42,6 +42,8 @@ export ⋅, ∧, ⨼, ⨽, ⨰, ⨱, ⊛, ×
 @define_postfix_symbol(₊)
 # \_-
 @define_postfix_symbol(₋)
+# \bot
+# @define_postfix_symbol(⊥)
 
 mutable struct Mv
     o::PyCall.PyObject
@@ -104,7 +106,7 @@ end
 @define_unary_op(Mv, Base.inv, inv)
 @define_postfix_op(Mv, ⁻¹, Base.inv)
 
-# Reversion: ~A = (A)ᵀ = A.rev()
+# Reversion: ~A = A[:~] = A.rev()
 # A^† is usually used in literature, but \dagger is reserved by Julia
 @define_unary_op(Mv, ~, rev)
 @define_unary_op(Mv, rev, rev)
@@ -118,15 +120,16 @@ end
 # A^⊥ (\bot) is sometimes used in literature
 @define_unary_op(Mv, Base.adjoint, dual)
 @define_unary_op(Mv, dual, dual)
+# @define_postfix_op(Mv, ⊥, dual)
 
 # Grade involution: postfix ˣ \^x
-# (A)ˣ = involute(A) := A+ - A- = A.even() - A.odd()
+# (A)ˣ = A[:*] = involute(A) := A+ - A- = A.even() - A.odd()
 # A^* is usually used in literature
 @pure involute(x::Mv) = x.even() - x.odd()
 @define_postfix_op(Mv, ˣ, involute)
 
 # Clifford conjugate: \doublepipe
-# (A)ǂ = ((A)^*)^†
+# (A)ǂ = A[:ǂ] := ((A)^*)^†
 # A^‡ is usually used in literature but \ddagger is reserved by Julia
 @pure Base.conj(x::Mv) = involute(x).rev()
 @define_postfix_op(Mv, ǂ, Base.conj)
@@ -147,16 +150,33 @@ end
 
 # Grade-i part: A[i] = <A>_i = A.grade(i)
 @pure Base.getindex(x::Mv, i::Integer) = x.grade(i)
+@pure function Base.getindex(x::Mv, sym::Symbol)
+    if sym == :+
+        even(x)
+    elseif sym == :-
+        odd(x)
+    elseif sym == :~
+        rev(x)
+    elseif sym == :⁻¹
+        inv(x)
+    elseif sym == :*
+        involute(x)
+    elseif sym == :ǂ
+        conj(x)
+    else
+        throw(DomainError(x, "argument can only be one of :+, :-, :~, :⁻¹, :*, :ǂ"))
+    end
+end
 
 # Scalar (grade-0) part: scalar(A) = A.scalar() := <A> = <A>_0
 # note: it returns a SymPy expression unlike A[0] which returns a Mv object
 @define_unary_op(Mv, scalar, scalar)
 
-# Even-grade part: (A)₊ = even(A) = A.even() := A+
+# Even-grade part: A[:+] = (A)₊ = even(A) = A.even() := A+
 @define_unary_op(Mv, even, even)
 @define_postfix_op(Mv, ₊, even)
 
-# Odd-grade part: (A)₋ = odd(A) = A.odd() := A-
+# Odd-grade part: A[:-] = (A)₋ = odd(A) = A.odd() := A-
 @define_unary_op(Mv, odd, odd)
 @define_postfix_op(Mv, ₋, odd)
 
