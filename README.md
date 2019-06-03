@@ -33,7 +33,7 @@ using GAlgebra
 # galgebra.printer.Format()
 
 (x, y, z) = xyz = symbols("x,y,z",real=true)
-(o3d, ex, ey, ez) = galgebra.ga.Ga.build("e", g=[1, 1, 1], coords=xyz)
+o3d = galgebra.ga.Ga("e", g=[1, 1, 1], coords=xyz)
 
 u = o3d.mv("u", "vector")
 v = o3d.mv("v", "vector")
@@ -152,7 +152,7 @@ Then you'll see something like:
    Testing GAlgebra
  Resolving package versions...
 Test Summary: | Pass  Total
-GAlgebra.jl   |  358    358
+GAlgebra.jl   | 1488   1488
    Testing GAlgebra tests passed
 ```
 
