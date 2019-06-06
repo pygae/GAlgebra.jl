@@ -64,9 +64,9 @@ end
     CGA2D = G(3,1)       # conformal 2D space. 
     CGA3D = G(4,1)       # Conformal 3D space. 
 
-    # for V ∈ [CGA2D, CGA3D] # pass but take extremely long
+    # for V ∈ [PGA3D, CGA2D, CGA3D] # pass but take extremely long
     # for V ∈ [Hyper, Dual, ℂ] # for quick test any of p, q, r is 1
-    for V ∈ [Cl2, Cl3, ℂ, ℍ, Hyper, Dual, Spacetime, PGA2D, PGA3D]
+    for V ∈ [Cl2, Cl3, ℂ, ℍ, Hyper, Dual, Spacetime, PGA2D]
         sigV = signature(V)
         @testset "G$sigV" begin
             # @test_broken 1==1 # for triggering error
