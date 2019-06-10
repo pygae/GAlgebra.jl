@@ -152,7 +152,7 @@ Then you'll see something like:
    Testing GAlgebra
  Resolving package versions...
 Test Summary: | Pass  Broken  Total
-GAlgebra.jl   | 2625       1   2626
+GAlgebra.jl   | 1791       1   1792
    Testing GAlgebra tests passed
 ```
 

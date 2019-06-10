@@ -61,14 +61,17 @@ end
     # Geometric
     PGA2D = G(2,0,1)     # Projective Euclidean 2D plane. (dual)
     PGA3D = G(3,0,1)     # Projective Euclidean 3D space. (dual)
-    CGA2D = G(3,1)       # conformal 2D space. 
+    CGA2D = G(3,1)       # Conformal 2D space. 
     CGA3D = G(4,1)       # Conformal 3D space. 
 
-    # for V ∈ [PGA3D, CGA2D, CGA3D] # pass but take extremely long
+    # for V ∈ [PGA2D, PGA3D, CGA2D, CGA3D] # pass but take extremely long
+    # Even PGA2D takes 189.979728 seconds (40.41 k allocations: 1.395 MiB)
+
     # for V ∈ [Hyper, Dual, ℂ] # for quick test any of p, q, r is 1
-    for V ∈ [Cl2, Cl3, ℂ, ℍ, Hyper, Dual, Spacetime, PGA2D]
+
+    for V ∈ [Cl2, Cl3, ℂ, ℍ, Hyper, Dual, Spacetime]
         sigV = signature(V)
-        @testset "G$sigV" begin
+        @time @testset "G$sigV" begin
             # @test_broken 1==1 # for triggering error
             dimV = range(0, stop=V.n)
             I = V.I()
@@ -89,15 +92,19 @@ end
 
             R = V.mv("R", "spinor")
 
+            # Precalculte AB and BA
+            AB = A * B
+            BA = B * A
+
             # The following tests verified implementation correctness per definition
 
             @test u ⋅ v == u | v == (u < v) == (u > v) == u ⨼ v == u ⨽ v == u ⨰ v
             @test u ∧ v == u ⨱ v
             @test v ⨼ B == (v < B)
             @test v ⨽ B == (v > B)
-            @test A ⨰ B == A << B == (A * B + B * A) / 2
+            @test A ⨰ B == A << B == (AB + BA) / 2
             # @test A ×̄ B == A ⨰ B
-            @test A ⨱ B == A >> B == (A * B - B * A) / 2
+            @test A ⨱ B == A >> B == (AB - BA) / 2
             @test A ⊛ B == A % B
 
             @test abs(v) == norm(v) == v.norm()
@@ -248,8 +255,8 @@ end
             @test A ⨽ v == - v ⨼ (A)ˣ                                                                # A.4.15
             @test A ∧ v == v ∧ (A)ˣ                                                                  # A.4.16
 
-            @test v ⨼ (A * B) == (v ⨼ A) * B + (A)ˣ * (v ⨼ B) == (v ∧ A) * B - (A)ˣ * (v ∧ B)       # A.4.18-19
-            @test v ∧ (A * B) == (v ∧ A) * B - (A)ˣ * (v ⨼ B) == (v ⨼ A) * B + (A)ˣ * (v ∧ B)       # A.4.20-21
+            @test v ⨼ (AB) == (v ⨼ A) * B + (A)ˣ * (v ⨼ B) == (v ∧ A) * B - (A)ˣ * (v ∧ B)       # A.4.18-19
+            @test v ∧ (AB) == (v ∧ A) * B - (A)ˣ * (v ⨼ B) == (v ⨼ A) * B + (A)ˣ * (v ∧ B)       # A.4.20-21
             @test v ⨼ (A ∧ B) == (v ⨼ A) ∧ B + (A)ˣ ∧ (v ⨼ B)                                       # A.4.22
             @test v ∧ (A ⨽ B) == (v ∧ A) ⨽ B - (A)ˣ ⨽ (v ⨼ B)                                       # A.4.23
             @test v ∧ (A ⨼ B) == (v ⨼ A) ⨼ B + (A)ˣ ⨼ (v ∧ B)                                       # A.4.24
@@ -259,7 +266,7 @@ end
             @test v ∧ A[:+] == A[:+] ∧ v
             @test v ∧ A[:-] == - (A[:-] ∧ v)
 
-            @test (A * B).scalar() == (B * A).scalar() == (~A * ~B).scalar() == 
+            @test (AB).scalar() == (BA).scalar() == (~A * ~B).scalar() == 
                 ((A)ˣ * (B)ˣ).scalar() == ((A)ǂ * (B)ǂ).scalar()                                      # A.4.3-6
 
             @test A ⨼ B == sum([sum([(A[r] * B[s])[s - r] for r ∈ dimV]) for s ∈ dimV])             # A.4.7
@@ -274,7 +281,7 @@ end
 
             @test u ∧ A ∧ v == - v ∧ A ∧ u                                                           # A.4.17
 
-            @test A * B == A ⨱ B + A ⨰ B
+            @test AB == A ⨱ B + A ⨰ B
             @test A ⨰ B == B ⨰ A
             @test A ⨱ B == - B ⨱ A
 
@@ -288,7 +295,7 @@ end
             @test A ⊛ (B ⨼ C) == (~B ∧ A) ⊛ C
             @test A ⊛ (B ∧ C) == (~B ⨼ A) ⊛ C
 
-            @test A * B ⋅ C ∧ D == ((A * B) ⋅ C) ∧ D
+            @test AB ⋅ C ∧ D == ((AB) ⋅ C) ∧ D
 
             if V ∉ [Dual, PGA2D, PGA3D, CGA2D, CGA3D]
                 @test u.dual() == u * V.I()
@@ -321,7 +328,7 @@ end
             end
         end
 
-        # The following takes too long
+        # The following takes forever
 
         # High-Dimensional GA
         # DCGA3D = G(6,2)      # Double Conformal 3D Space.
