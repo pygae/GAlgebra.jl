@@ -7,3 +7,5 @@ deps/deps.jl
 /dev/
 deps/build.log
 deps/src/
+.ipynb_checkpoints/
+notebook/profile_results.svg
