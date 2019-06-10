@@ -19,7 +19,7 @@ Very early. But it already works and has many tests.
 
 GAlgebra.jl itself doesn't depend on [SymPy.jl](https://github.com/JuliaPy/SymPy.jl), but is designed to work with it.
 
-After installing SymPy.jl and GAlgebra.jl (see below for instructions), you may experiment with GAlgebra.jl just like in the Python version of GAlgebra (though there're some syntax differences like `True`/`true`, `'`/`"` etc. between Python and Julia).
+After installing SymPy.jl and GAlgebra.jl (see below for instructions), you may experiment with GAlgebra.jl just like in the Python version of GAlgebra (though [there're some syntax differences between Python and Julia](https://docs.julialang.org/en/v1/manual/noteworthy-differences/#Noteworthy-differences-from-Python-1) like `True`/`true`, `'`/`"` etc.).
 
 For example, you may start with:
 
