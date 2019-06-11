@@ -4,7 +4,7 @@ export G
 
     G(p::Integer, q::Integer, r::Integer)
 
-Instantiate a Geometric Algebra with `p` positive, `q` negative and `r` zero dimensions.
+A convenient method to instantiate a Geometric Algebra with `p` positive, `q` negative and `r` zero dimensions.
 
 `q` and `r` defaults to zero if omitted.
 
@@ -36,6 +36,26 @@ TCGA3D = G(9,3)      # Tripple Conformal 3D Space.
 DCGSTA = G(4,8)      # Double Conformal Geometric Space Time Algebra.
 QCGA   = G(9,6)      # Quadric Conformal Geometric Algebra.  
 ```
+
+To instantiate a Geometric Algebra with more parameters, use `galgebra.ga.Ga` instead.
+
+For example:
+
+```julia
+import SymPy: sympy
+using GAlgebra
+
+Ga = galgebra.ga.Ga
+
+g3d = Ga("e*x|y|z")
+
+(r, th, phi) = coords = sympy.symbols("r theta phi")
+s3d = Ga("e_r e_theta e_phi", g=[1 0 0; 0 r^2 0; 0 0 r^2 * sympy.sin(th)^2], coords=coords, norm=true)
+(er, eth, ephi) = s3d.mv()
+```
+
+Please also consult the documentation of [GAlgebra](https://github.com/pygae/galgebra).
+
 """
 function G(p::Integer, q::Integer, r::Integer)
     total = p + q + r

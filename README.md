@@ -55,9 +55,8 @@ v ⨱ A
 # A⨰B = (AB+BA)/2
 v ⨰ A
 
-# Norm: abs(A) = norm(A) = A.norm() := ||A||
+# Norm: norm(A) = A.norm() := ||A||
 norm(v)
-abs(v)
 
 # Inverse: postfix ⁻¹ \^-\^1
 # (A)⁻¹ = A^-1 = inv(A) = A.inv()

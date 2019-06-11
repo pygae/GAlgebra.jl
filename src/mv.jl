@@ -60,58 +60,98 @@ end
 @delegate_properties(Mv, :o)
 @delegate_doc(Mv)
 
-@doc doc_ascii_op("Mv", "+", "Addtion.", "")
+"Addition."
 @define_op(Mv, +, __add__)
 
-@doc doc_ascii_op("Mv", "-", "Subtraction.", "")
+"Subtraction."
 @define_op(Mv, -, __sub__)
 
-@doc doc_ascii_op("Mv", "*", "Geometric product.",
-    raw"Same as ``A B``.")
+@doc raw"""
+Geometric product.
+
+``A * B \equiv A B``.
+"""
 @define_op(Mv, *, __mul__)
 
+@doc raw"""
+Division.
 
-@doc doc_ascii_op("Mv", "/", "Division.",
-    raw"Same as ``A B^{-1}``. Only valid when B has inverse.")
+``A / B \equiv A B^{-1}``. Only valid when ``B`` has inverse.
+"""
 @define_op(Mv, /, __div__)
 
-@doc doc_ascii_op("Mv", "==", "Comparisons of equality.", 
-    raw"``A = B`` is equivalent to ``(A - B).\mathrm{simplify()} = 0``")
+@doc raw"""
+Comparisons of equality.
+
+``A = B \equiv \mathrm{simplify}(A - B) = 0``
+"""
 @define_op(Mv, ==, __eq__)
 
-@doc doc_unicode_op("Mv", "≠", raw"\neq", "Comparisons of inequality.", 
-    raw"``A \neq B`` is equivalent to ``(A - B).\mathrm{simplify()} \neq 0``")
+@doc raw"""
+Comparisons of inequality.
+
+Hint: Type ≠ with `\neq`. Alternatively, use `!=`.
+
+``A \neq B \equiv \mathrm{simplify}(A - B) \neq 0``
+"""
 @define_op(Mv, ≠, __ne__)
 @define_op(Mv, !=, __ne__)
 
-@doc doc_unicode_op("Mv", "∧", raw"\wedge", "Wedge product.", "")
+@doc raw"""
+Wedge product.
+
+Hint: type ∧ with `\wedge`.
+"""
 @define_op(Mv, ∧, __xor__)
 
-@doc doc_unicode_op("Mv", "⋅", raw"\cdot", "Hestenes' inner product.", "")
+@doc raw"""
+Hestenes' inner product.
+
+Hint: type ⋅ with `\cdot`. Alternatively, use `|`.
+
+``\boldsymbol{A}_{r} \cdot \boldsymbol{B}_{s} \equiv \left\{\begin{array}{lr}{r \text { and } s \neq 0 :} & {\left\langle\boldsymbol{A}_{r} \boldsymbol{B}_{s}\right\rangle_{|r-s|}} \\ {r \text { or } s=0 :} & {0}\end{array}\right.``
+"""
 @define_op(Mv, ⋅, __or__)
 @define_op(Mv, |, __or__)
 
-@doc raw"""
-    ⨼(A::Mv, B::Mv)
+@doc raw"""Left contraction, i.e. "contraction onto". 
 
-Left contraction. Type with `\cdot`. 
+Hint: type ⨼ with `\intprod`. Alternatively, use `<`.
 
-If ASCII operator is preferred, use `|` instead.
+``A \rfloor B \equiv \sum\limits_{r, s}\left\langle\langle A\rangle_{r}\langle B\rangle_{s}\right\rangle_{s-r}``
+
+In literature the notation is usually ``A \rfloor B``, but `\rfloor` is reserved by Julia.
 """
-# Left contraction: \intprod
 @define_op(Mv, ⨼, __lt__)
 @define_op(Mv, <, __lt__)
-# Right contraction: \intprodr
+
+@doc raw"""Right contraction, i.e. "contraction by".
+
+Hint: type ⨽ with `\intprodr`. Alternatively, use `>`.
+
+``A \lfloor B \equiv \sum\limits_{r, s}\left\langle\langle A\rangle_{r}\langle B\rangle_{s}\right\rangle_{r-s}``
+
+In literature the notation is usually ``A \lfloor B``, but `\lfloor` is reserved by Julia.
+"""
 @define_op(Mv, ⨽, __gt__)
 @define_op(Mv, >, __gt__)
 
-# Commutator product: ⨱ \timesbar
-# A⨱B = (AB-BA)/2
+
+@doc raw"""Commutator product.
+
+Hint: type ⨱ with `\timesbar`. Alternatively, use `>>`.
+
+``A \underline{\times} B \equiv \dfrac{1}{2}(AB-BA)``.
+"""
 @define_op(Mv, ⨱, __rshift__)
 @define_op(Mv, >>, __rshift__)
 
-# Anti-commutator product: ⨰ \dottimes
-# A⨰B = (AB+BA)/2
+@doc raw"""Anti-commutator product.
+
+Hint: type ⨰ with `\dottimes`. Alternatively, use `<<`.
+
+``A \bar{\times} B \equiv \dfrac{1}{2}(AB+BA)``.
+"""
 @define_op(Mv, ⨰, __lshift__)
 @define_op(Mv, <<, __lshift__)
 
@@ -119,68 +159,146 @@ If ASCII operator is preferred, use `|` instead.
 # A×̄B = (AB+BA)/2
 # @define_op(Mv, ×̄, __lshift__)
 
-# Cross product for vectors in 3D
+@doc raw"""
+Cross product for vectors in 3D.
+"""
 @pure ×(x::Mv, y::Mv) = mv.cross(x, y)
 
-# Scalar product: \circledast
-# A ⊛ B = <A B†>
+@doc raw"""Scalar product.
+
+Hint: type ⊛ with `\circledast`. Alternatively, use `%`.
+
+``A \circledast B \equiv \langle A B^{\dagger} \rangle``.
+
+In literature the notation is usually ``\ast`` , but it's visually indistinguishable from `*`.
+"""
 @pure ⊛(x::Mv, y::Mv) = (x * ~y).scalar()
 @pure %(x::Mv, y::Mv) = x ⊛ y
 
+"Unary negation."
 @define_unary_op(Mv, -, __neg__)
 
-# Norm: abs(A) = norm(A) = A.norm() := ||A||
-@define_unary_op(Mv, Base.abs, norm)
-@define_unary_op(Mv, norm, norm)
+@doc raw"""
+Norm.
 
-# Inverse: \^-\^1
-# (A)⁻¹ = A^-1 = A.inv()
+`norm(A)` = `A.norm()` ``\equiv \left\lVert A \right\rVert \equiv \sqrt{A \tilde{A}}``
+
+Alternatively:
+
+- `A.norm(hint="+")` ``\equiv \sqrt{A \tilde{A}}``
+- `A.norm(hint="-")` ``\equiv \sqrt{- A \tilde{A}}``
+- `A.norm(hint="0")` ``\equiv \sqrt{\left| A \tilde{A} \right|}``
+
+Only valid when the result is a scalar.
+"""
+@define_unary_op(Mv, norm, norm)
+@define_unary_op(Mv, Base.abs, norm)
+
+@doc raw"""
+Inverse.
+
+`(A)⁻¹ = A^-1 = inv(A) = A.inv()` ``\equiv A^{-1}``
+
+Hint: type ⁻¹ with `\^-\^1`.
+"""
 @define_unary_op(Mv, Base.inv, inv)
 @define_postfix_op(Mv, ⁻¹, Base.inv)
 
-# Reversion: ~A = A[:~] = A.rev()
-# A^† is usually used in literature, but \dagger is reserved by Julia
+@doc raw"""
+Reversion.
+
+`~A = A[:~] = rev(A) = A.rev()` ``\equiv \tilde{A} \equiv A^{\dagger}``
+
+In literature the notation is usually ``\tilde{A}`` or ``A^{\dagger}``, the former is illegal syntax and `\dagger` in the latter is is reserved by Julia.
+"""
 @define_unary_op(Mv, ~, rev)
 @define_unary_op(Mv, rev, rev)
 
 # @deprecated
 # @define_postfix_op(Mv, ᵀ, rev)
 
-# Dual: A' = A * I
-# note: Ga.dual_mode_value is default to "I+"
-# change Ga.dual_mode_value to get a different definition
-# A^⊥ (\bot) is sometimes used in literature
+@doc raw"""
+Dual, i.e. orthogonal complement, ``\Lambda^p \to \Lambda^{n-p}``.
+
+`A'` ``\equiv A^{\bot} \equiv A I``
+
+Note: call `Ga.dual_mode(mode)` to globally specify a different dual mode (`I+` is the default):
+
+| dual_mode | ``A^{\bot}`` |
+|-----------|--------------|
+|   `+I`    |     ``IA``   |
+|   `-I`    |    ``-IA``   |
+|   `I+`    |     ``AI``   |
+|   `I-`    |    ``-AI``   |
+|  `+Iinv`  |  ``I^{-1}A`` |
+|  `-Iinv`  | ``-I^{-1}A`` |
+|  `Iinv+`  |  ``AI^{-1}`` |
+|  `Iinv-`  | ``-AI^{-1}`` |
+"""
 @define_unary_op(Mv, Base.adjoint, dual)
 @define_unary_op(Mv, dual, dual)
 # @define_postfix_op(Mv, ⊥, dual)
 
-# Grade involution: postfix ˣ \^x
-# (A)ˣ = A[:*] = involute(A) := A+ - A- = A.even() - A.odd()
-# A^* is usually used in literature
+@doc raw"""
+Grade involution.
+
+`(A)ˣ = A[:*] = involute(A)` ``\equiv A_+ - A_- \equiv`` `A.even() - A.odd()`
+
+Hint: type ˣ with `\^x`.
+
+In literature the notation is usually ``A^{*}``.
+"""
 @pure involute(x::Mv) = x.even() - x.odd()
 @define_postfix_op(Mv, ˣ, involute)
 
-# Clifford conjugate: \doublepipe
-# (A)ǂ = A[:ǂ] := ((A)^*)^†
-# A^‡ is usually used in literature but \ddagger is reserved by Julia
+@doc raw"""
+Clifford conjugate.
+
+`(A)ǂ = A[:ǂ]` ``\equiv A^{*\dagger}``
+
+Hint: type ǂ with `\doublepipe`.
+
+In literature the notation is usually ``A^{\ddagger}``, but `\ddagger` is reserved by Julia.
+"""
 @pure Base.conj(x::Mv) = involute(x).rev()
 @define_postfix_op(Mv, ǂ, Base.conj)
 
-# Projection: proj(B, A) = A.project_in_blade(B)
+@doc raw"""
+Projection.
+
+`proj(B, A)` `` \equiv P_{B}(A) \equiv`` `A.project_in_blade(B)`
+
+Only valid if B is a blade.
+"""
 @pure proj(y::Mv, x::Mv) = mv.proj(y, x)
 
-# Reflection: refl(B, A) = A.reflect_in_blade(B)
+@doc raw"""
+Reflection.
+
+`refl(B, A)` `` \equiv \mathrm{Refl}_{B}(A) \equiv`` `A.reflect_in_blade(B)`
+
+Only valid if B is a blade.
+"""
 @pure refl(y::Mv, x::Mv) = mv.refl(y, x)
 
-# Rotation: rot(itheta, A) = A.rotate_multivector(itheta)
-# rotate the multivector A by the 2-blade itheta
+@doc raw"""
+Rotation.
+
+Rotate the multivector `A` by the 2-blade `itheta`.
+
+`rot(itheta, A)` ``\equiv A e^{I \theta} \equiv`` `A.rotate_multivector(itheta)`
+"""
 @pure rot(itheta::Mv, A::Mv, hint::AbstractString="-") = mv.rot(itheta, A, hint)
 
-# Natural base exponential of x: e^x
+@doc raw"Natural base exponential of X: ``e^X``"
 @pure Base.exp(x::Mv) = exp_with_hint(x, "-")
 @pure exp_with_hint(x::Mv, hint::AbstractString="-") = mv.exp(x, hint)
 
-# Grade-i part: A[i] = <A>_i = A.grade(i)
+@doc raw"""
+The `i`-th grade part.
+
+`A[i] = A.grade(i)` ``\equiv \langle A B^{\dagger} \rangle_i``
+"""
 @pure Base.getindex(x::Mv, i::Integer) = x.grade(i)
 @pure function Base.getindex(x::Mv, sym::Symbol)
     if sym == :+
@@ -200,15 +318,28 @@ If ASCII operator is preferred, use `|` instead.
     end
 end
 
-# Scalar (grade-0) part: scalar(A) = A.scalar() := <A> = <A>_0
-# note: it returns a SymPy expression unlike A[0] which returns a Mv object
+@doc raw"""
+Scalar (grade-0) part.
+
+`scalar(A) = A.scalar()` ``\equiv \langle A B^{\dagger} \rangle \equiv \langle A B^{\dagger} \rangle_0``
+
+Note: it returns a SymPy expression unlike A[0] which returns a Mv object
+"""
 @define_unary_op(Mv, scalar, scalar)
 
-# Even-grade part: A[:+] = (A)₊ = even(A) = A.even() := A+
+@doc raw"""
+Even-grade part.
+
+`A[:+] = (A)₊ = even(A) = A.even()` ``\equiv A_+``
+"""
 @define_unary_op(Mv, even, even)
 @define_postfix_op(Mv, ₊, even)
 
-# Odd-grade part: A[:-] = (A)₋ = odd(A) = A.odd() := A-
+@doc raw"""
+Odd-grade part.
+
+`A[:-] = (A)₋ = odd(A) = A.odd()` ``\equiv A_-``
+"""
 @define_unary_op(Mv, odd, odd)
 @define_postfix_op(Mv, ₋, odd)
 

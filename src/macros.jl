@@ -1,17 +1,17 @@
 macro define_show(type)
-  @eval begin
-      Base.show(io::IO, x::$type) = print(io, pystr(x.o))
-      Base.show(io::IO, ::MIME"text/plain", x::$type) = print(io, pystr(x.o))
-      Base.show(io::IO, ::MIME"text/latex", x::$type) = print(io, "\\begin{align*}" * galgebra.printer.latex(x.o) * "\\end{align*}")
+  return quote
+      Base.show(io::IO, x::$(esc(type))) = print(io, pystr(x.o))
+      Base.show(io::IO, ::MIME"text/plain", x::$(esc(type))) = print(io, pystr(x.o))
+      Base.show(io::IO, ::MIME"text/latex", x::$(esc(type))) = print(io, "\\begin{align*}" * galgebra.printer.latex(x.o) * "\\end{align*}")
   end
 end
 
 macro delegate_properties(type, obj_field)
-  @eval begin
-      Base.convert(::Type{$type}, o::PyCall.PyObject) = $type(o)
-      PyCall.PyObject(o::$type) = PyCall.PyObject(getfield(o, $obj_field))
+  return quote
+      Base.convert(::Type{$(esc(type))}, o::PyCall.PyObject) = $(esc(type))(o)
+      PyCall.PyObject(o::$(esc(type))) = PyCall.PyObject(getfield(o, $obj_field))
 
-      function Base.getproperty(o::$type, s::AbstractString)
+      function Base.getproperty(o::$(esc(type)), s::AbstractString)
           if s == String($obj_field)
               return getfield(o, $obj_field)
           else
@@ -19,54 +19,32 @@ macro delegate_properties(type, obj_field)
           end
       end
       
-      Base.getproperty(o::$type, s::Symbol) = getproperty(o, String(s))
+      Base.getproperty(o::$(esc(type)), s::Symbol) = getproperty(o, String(s))
       
-      Base.propertynames(o::$type) = map(x->Symbol(first(x)),
+      Base.propertynames(o::$(esc(type))) = map(x->Symbol(first(x)),
                                       pycall(inspect."getmembers", PyObject, getfield(o, $obj_field)))
       
       # avoiding method ambiguity
-      Base.setproperty!(o::$type, s::Symbol, v) = _setproperty!(o,s,v)
-      Base.setproperty!(o::$type, s::AbstractString, v) = _setproperty!(o,s,v)
+      Base.setproperty!(o::$(esc(type)), s::Symbol, v) = _setproperty!(o,s,v)
+      Base.setproperty!(o::$(esc(type)), s::AbstractString, v) = _setproperty!(o,s,v)
       
-      function _setproperty!(o::$type, s::Union{Symbol,AbstractString}, v)
+      function _setproperty!(o::$(esc(type)), s::Union{Symbol,AbstractString}, v)
           obj = getfield(o, $obj_field)
           setproperty!(obj, s, v)
           o
       end
 
-      hasproperty(o::$type, s::Symbol) = hasproperty(getfield(o, $obj_field), s)
-      hasproperty(o::$type, s::AbstractString) = hasproperty(getfield(o, $obj_field), s)
+      hasproperty(o::$(esc(type)), s::Symbol) = hasproperty(getfield(o, $obj_field), s)
+      hasproperty(o::$(esc(type)), s::AbstractString) = hasproperty(getfield(o, $obj_field), s)
   end
 end
 
 macro delegate_doc(type)
-  @eval begin
+  return quote
       # Expose Python docstrings to the Julia doc system
-      Docs.getdoc(x::$type) = Text(convert(String, x."__doc__"))
-      Docs.Binding(x::$type, s::Symbol) = getproperty(x, s)
+      Docs.getdoc(x::$(esc(type))) = Text(convert(String, x."__doc__"))
+      Docs.Binding(x::$(esc(type)), s::Symbol) = getproperty(x, s)
   end
-end
-
-function doc_ascii_op(type, op, primary, additonal)
-  return """
-    $op (A::$type, B::$type)
-
-    $primary
-
-    $additonal
-"""
-end
-
-function doc_unicode_op(type, op, op_latex, primary, additonal)
-  return """
-    $op (A::$type, B::$type)
-
-    $primary
-    
-    Hint: Type $op with `$op_latex`.
-
-    $additonal
-"""
 end
 
 macro define_op(type, op, method)
@@ -76,33 +54,33 @@ macro define_op(type, op, method)
 end
 
 macro define_lop(type, rtype, op, lmethod)
-  @eval begin
-    @pure $op(x::$type, y::$rtype) = x.$lmethod(y)
+  return quote
+    Core.@__doc__ @pure $(esc(op))(x::$(esc(type)), y::$(esc(rtype))) = x.$lmethod(y)
   end
 end
               
 macro define_rop(type, ltype, op, rmethod)
-  @eval begin
-    @pure $op(x::$ltype, y::$type) = y.$rmethod(x)
+  return quote
+    Core.@__doc__ @pure $(esc(op))(x::$(esc(ltype)), y::$(esc(type))) = y.$rmethod(x)
   end
 end
 
 macro define_unary_op(type, op, method)
-  @eval begin
-    @pure $op(x::$type) = x.$method()
+  return quote
+    Core.@__doc__ @pure $(esc(op))(x::$(esc(type))) = x.$method()
   end
 end
 
 macro define_postfix_symbol(super_script)
-  @eval begin
-      const $super_script = () -> String(:super_script)
-      export $super_script
+  return quote
+      const $(esc(super_script)) = () -> String(:super_script)
+      export $(esc(super_script))
   end
 end
 
 macro define_postfix_op(type, super_script, func)
-  @eval begin
-      Base.:(*)(x::$type,::typeof($super_script)) = $func(x)
-      Base.:(^)(x::$type,::typeof($super_script)) = $func(x)
+  return quote
+      Base.:(*)(x::$(esc(type)),::typeof($(esc(super_script)))) = $func(x)
+      Base.:(^)(x::$(esc(type)),::typeof($(esc(super_script)))) = $func(x)
   end
 end
