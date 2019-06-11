@@ -9,3 +9,5 @@ deps/build.log
 deps/src/
 .ipynb_checkpoints/
 notebook/profile_results.svg
+docs/build/
+docs/src/index.md

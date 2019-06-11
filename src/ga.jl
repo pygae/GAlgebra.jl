@@ -1,9 +1,12 @@
 export G
 
 """
-Instantiate a Geometric Algebra with 'p' positive, 'q' negative and 'r' zero dimensions.
 
-'q' and 'r' defaults to zero if omitted.
+    G(p::Integer, q::Integer, r::Integer)
+
+Instantiate a Geometric Algebra with `p` positive, `q` negative and `r` zero dimensions.
+
+`q` and `r` defaults to zero if omitted.
 
 The basis will be named with prefix `e` and indexed starting from 1.
 

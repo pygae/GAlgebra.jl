@@ -47,27 +47,49 @@ macro delegate_doc(type)
   end
 end
 
+function doc_ascii_op(type, op, primary, additonal)
+  return """
+    $op (A::$type, B::$type)
+
+    $primary
+
+    $additonal
+"""
+end
+
+function doc_unicode_op(type, op, op_latex, primary, additonal)
+  return """
+    $op (A::$type, B::$type)
+
+    $primary
+    
+    Hint: Type $op with `$op_latex`.
+
+    $additonal
+"""
+end
+
 macro define_op(type, op, method)
-  @eval begin
-      @pure $op(x::$type, y::$type) = x.$method(y)
+  return quote
+    Core.@__doc__ @pure $(esc(op))(x::$(esc(type)), y::$(esc(type))) = x.$method(y)
   end
 end
 
 macro define_lop(type, rtype, op, lmethod)
   @eval begin
-      @pure $op(x::$type, y::$rtype) = x.$lmethod(y)
+    @pure $op(x::$type, y::$rtype) = x.$lmethod(y)
   end
 end
               
 macro define_rop(type, ltype, op, rmethod)
   @eval begin
-      @pure $op(x::$ltype, y::$type) = y.$rmethod(x)
+    @pure $op(x::$ltype, y::$type) = y.$rmethod(x)
   end
 end
 
 macro define_unary_op(type, op, method)
   @eval begin
-      @pure $op(x::$type) = x.$method()
+    @pure $op(x::$type) = x.$method()
   end
 end
 

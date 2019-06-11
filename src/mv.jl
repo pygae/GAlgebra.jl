@@ -45,6 +45,13 @@ export ⋅, ∧, ⨼, ⨽, ⨰, ⨱, ⊛, ×
 # \bot
 # @define_postfix_symbol(⊥)
 
+@doc raw"""
+A wrapper class for `galgebra.mv.Mv`:
+    
+- all methods of `galgebra.mv.Mv` are delegated and can be called like in Python.
+- enhanced with operator overriding and extra methods.
+- automatically supports pretty printing like in Python.
+"""
 mutable struct Mv
     o::PyCall.PyObject
 end
@@ -53,19 +60,44 @@ end
 @delegate_properties(Mv, :o)
 @delegate_doc(Mv)
 
+@doc doc_ascii_op("Mv", "+", "Addtion.", "")
 @define_op(Mv, +, __add__)
+
+@doc doc_ascii_op("Mv", "-", "Subtraction.", "")
 @define_op(Mv, -, __sub__)
-# Geometric product: *
+
+@doc doc_ascii_op("Mv", "*", "Geometric product.",
+    raw"Same as ``A B``.")
 @define_op(Mv, *, __mul__)
+
+
+@doc doc_ascii_op("Mv", "/", "Division.",
+    raw"Same as ``A B^{-1}``. Only valid when B has inverse.")
 @define_op(Mv, /, __div__)
+
+@doc doc_ascii_op("Mv", "==", "Comparisons of equality.", 
+    raw"``A = B`` is equivalent to ``(A - B).\mathrm{simplify()} = 0``")
 @define_op(Mv, ==, __eq__)
+
+@doc doc_unicode_op("Mv", "≠", raw"\neq", "Comparisons of inequality.", 
+    raw"``A \neq B`` is equivalent to ``(A - B).\mathrm{simplify()} \neq 0``")
+@define_op(Mv, ≠, __ne__)
 @define_op(Mv, !=, __ne__)
 
-# Wedge product: \wedge
+@doc doc_unicode_op("Mv", "∧", raw"\wedge", "Wedge product.", "")
 @define_op(Mv, ∧, __xor__)
-# Hestenes' inner product: ⋅ \cdot
+
+@doc doc_unicode_op("Mv", "⋅", raw"\cdot", "Hestenes' inner product.", "")
 @define_op(Mv, ⋅, __or__)
 @define_op(Mv, |, __or__)
+
+@doc raw"""
+    ⨼(A::Mv, B::Mv)
+
+Left contraction. Type with `\cdot`. 
+
+If ASCII operator is preferred, use `|` instead.
+"""
 # Left contraction: \intprod
 @define_op(Mv, ⨼, __lt__)
 @define_op(Mv, <, __lt__)
