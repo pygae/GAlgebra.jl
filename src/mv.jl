@@ -14,7 +14,7 @@ export Mv
 
 export norm, rev, dual, involute, proj, refl, rot, exp_with_hint, scalar, even, odd
 # export \cdot, \wedge, \intprod, \intprodr, \dottimes, \timesbar, \circledast, \times
-export ⋅, ∧, ⨼, ⨽, ⨰, ⨱, ⊛, ×
+export +, -, *, /, ^, |, %, ==, !=, <, >, <<, >>, ~, ⋅, ∧, ⨼, ⨽, ⨰, ⨱, ⊛, ×
 # Operator precedence: they have the same precedence, unlike in math
 # julia> for op ∈ [:* :⋅ :∧ :⨼ :⨽ :⨰ :⨱ :⊛ :×]; println(String(op), "  ", Base.operator_precedence(op)) end
 # *  13
@@ -162,7 +162,7 @@ Hint: type ⨰ with `\dottimes`. Alternatively, use `<<`.
 @doc raw"""
 Cross product for vectors in 3D.
 """
-@pure ×(x::Mv, y::Mv) = mv.cross(x, y)
+@define_op_with_impl(Mv, ×, mv.cross(x, y))
 
 @doc raw"""Scalar product.
 
@@ -172,8 +172,8 @@ Hint: type ⊛ with `\circledast`. Alternatively, use `%`.
 
 In literature the notation is usually ``\ast`` , but it's visually indistinguishable from `*`.
 """
-@pure ⊛(x::Mv, y::Mv) = (x * ~y).scalar()
-@pure %(x::Mv, y::Mv) = x ⊛ y
+@define_op_with_impl(Mv, ⊛, (x * ~y).scalar())
+@define_op_with_impl(Mv, %, x ⊛ y)
 
 "Unary negation."
 @define_unary_op(Mv, -, __neg__)
@@ -248,7 +248,7 @@ Hint: type ˣ with `\^x`.
 
 In literature the notation is usually ``A^{*}``.
 """
-@pure involute(x::Mv) = x.even() - x.odd()
+@define_unary_op_with_impl(Mv, involute, x.even() - x.odd())
 @define_postfix_op(Mv, ˣ, involute)
 
 @doc raw"""
@@ -260,7 +260,7 @@ Hint: type ǂ with `\doublepipe`.
 
 In literature the notation is usually ``A^{\ddagger}``, but `\ddagger` is reserved by Julia.
 """
-@pure Base.conj(x::Mv) = involute(x).rev()
+@define_unary_op_with_impl(Mv, Base.conj, involute(x).rev())
 @define_postfix_op(Mv, ǂ, Base.conj)
 
 @doc raw"""
@@ -270,7 +270,7 @@ Projection.
 
 Only valid if B is a blade.
 """
-@pure proj(y::Mv, x::Mv) = mv.proj(y, x)
+@define_op_with_impl(Mv, proj, mv.proj(x, y))
 
 @doc raw"""
 Reflection.
@@ -279,7 +279,7 @@ Reflection.
 
 Only valid if B is a blade.
 """
-@pure refl(y::Mv, x::Mv) = mv.refl(y, x)
+@define_op_with_impl(Mv, refl, mv.refl(x, y))
 
 @doc raw"""
 Rotation.
@@ -288,10 +288,11 @@ Rotate the multivector `A` by the 2-blade `itheta`.
 
 `rot(itheta, A)` ``\equiv A e^{I \theta} \equiv`` `A.rotate_multivector(itheta)`
 """
-@pure rot(itheta::Mv, A::Mv, hint::AbstractString="-") = mv.rot(itheta, A, hint)
+@define_op_with_impl(Mv, rot, rot_with_hint(x, y))
+@pure rot_with_hint(itheta::Mv, A::Mv, hint::AbstractString="-") = mv.rot(itheta, A, hint)
 
 @doc raw"Natural base exponential of X: ``e^X``"
-@pure Base.exp(x::Mv) = exp_with_hint(x, "-")
+@define_unary_op_with_impl(Mv, Base.exp, exp_with_hint(x))
 @pure exp_with_hint(x::Mv, hint::AbstractString="-") = mv.exp(x, hint)
 
 @doc raw"""

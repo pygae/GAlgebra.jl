@@ -53,6 +53,12 @@ macro define_op(type, op, method)
   end
 end
 
+macro define_op_with_impl(type, op, impl)
+  return quote
+    Core.@__doc__ @pure $(esc(op))(x::$(esc(type)), y::$(esc(type))) = $impl
+  end
+end
+
 macro define_lop(type, rtype, op, lmethod)
   return quote
     Core.@__doc__ @pure $(esc(op))(x::$(esc(type)), y::$(esc(rtype))) = x.$lmethod(y)
@@ -68,6 +74,12 @@ end
 macro define_unary_op(type, op, method)
   return quote
     Core.@__doc__ @pure $(esc(op))(x::$(esc(type))) = x.$method()
+  end
+end
+
+macro define_unary_op_with_impl(type, op, impl)
+  return quote
+    Core.@__doc__ @pure $(esc(op))(x::$(esc(type))) = $impl
   end
 end
 
