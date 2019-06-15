@@ -20,6 +20,6 @@ matrix:
 git:
     depth: 1
 before_install:
-  - pip install --upgrade pip
+  - sudo pip install --upgrade pip
 after_success:
   - julia -e 'using Pkg; cd(Pkg.dir("GAlgebra")); Pkg.add("Coverage"); using Coverage; Codecov.submit(Codecov.process_folder())'
