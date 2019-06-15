@@ -1,6 +1,7 @@
 language: julia
 os:
   - linux
+dist: xenial
 sudo: true
 julia:
   - 1.0
