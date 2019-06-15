@@ -13,17 +13,17 @@ import Base: abs, inv, adjoint, exp, getindex
 export Mv
 
 export norm, rev, dual, involute, proj, refl, rot, exp_with_hint, scalar, even, odd
-# export \cdot, \wedge, \intprod, \intprodr, \dottimes, \timesbar, \circledast, \times
-export +, -, *, /, ^, |, %, ==, !=, <, >, <<, >>, ~, ⋅, ∧, ⨼, ⨽, ⨰, ⨱, ⊛, ×
+# export \cdot, \wedge, \intprod, \intprodr, \odot, \boxtimes, \circledast, \times
+export +, -, *, /, ^, |, %, ==, !=, <, >, <<, >>, ~, ⋅, ∧, ⨼, ⨽, ⊙, ⊠, ⊛, ×
 # Operator precedence: they have the same precedence, unlike in math
-# julia> for op ∈ [:* :⋅ :∧ :⨼ :⨽ :⨰ :⨱ :⊛ :×]; println(String(op), "  ", Base.operator_precedence(op)) end
+# julia> for op ∈ [:* :⋅ :∧ :⨼ :⨽ :⊙ :⊠ :⊛ :×]; println(String(op), "  ", Base.operator_precedence(op)) end
 # *  13
 # ⋅  13
 # ∧  13
 # ⨼  13
 # ⨽  13
-# ⨰  13
-# ⨱  13
+# ⊙  13
+# ⊠  13
 # ⊛  13
 # ×  13
 
@@ -139,20 +139,20 @@ In literature the notation is usually ``A \lfloor B``, but `\lfloor` is reserved
 
 @doc raw"""Commutator product.
 
-Hint: type ⨱ with `\timesbar`. Alternatively, use `>>`.
+Hint: type ⊠ with `\boxtimes`. Alternatively, use `>>`.
 
 ``A \underline{\times} B \equiv \dfrac{1}{2}(AB-BA)``.
 """
-@define_op(Mv, ⨱, __rshift__)
+@define_op(Mv, ⊠, __rshift__)
 @define_op(Mv, >>, __rshift__)
 
 @doc raw"""Anti-commutator product.
 
-Hint: type ⨰ with `\dottimes`. Alternatively, use `<<`.
+Hint: type ⊙ with `\odot`. Alternatively, use `<<`.
 
 ``A \bar{\times} B \equiv \dfrac{1}{2}(AB+BA)``.
 """
-@define_op(Mv, ⨰, __lshift__)
+@define_op(Mv, ⊙, __lshift__)
 @define_op(Mv, <<, __lshift__)
 
 # # experimental symbol for anti-comutator product: \bar\times

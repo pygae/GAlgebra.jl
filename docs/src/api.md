@@ -28,8 +28,8 @@ GAlgebra.:⋅(::Mv,::Mv)
 GAlgebra.:⨼(::Mv,::Mv)
 GAlgebra.:⨽(::Mv,::Mv)
 
-GAlgebra.:⨱(::Mv,::Mv)
-GAlgebra.:⨰(::Mv,::Mv)
+GAlgebra.:⊠(::Mv,::Mv)
+GAlgebra.:⊙(::Mv,::Mv)
 GAlgebra.:×(::Mv,::Mv)
 GAlgebra.:⊛(::Mv,::Mv)
 

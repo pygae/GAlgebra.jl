@@ -48,12 +48,12 @@ v ⨽ A
 # Scalar product: ⊛ \circledast
 # A ⊛ B = <A B†>
 v ⊛ A
-# Commutator product: ⨱ \timesbar
-# A⨱B = (AB-BA)/2
-v ⨱ A
-# Anti-commutator product: ⨰ \dottimes
-# A⨰B = (AB+BA)/2
-v ⨰ A
+# Commutator product: ⊠ \boxtimes
+# A⊠B = (AB-BA)/2
+v ⊠ A
+# Anti-commutator product: ⊙ \odot
+# A⊙B = (AB+BA)/2
+v ⊙ A
 
 # Norm: norm(A) = A.norm() := ||A||
 norm(v)

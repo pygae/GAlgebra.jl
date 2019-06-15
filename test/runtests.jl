@@ -90,14 +90,13 @@ end
     
         # The following tests verified implementation correctness per definition
     
-        @test u ⋅ v == u | v == (u < v) == (u > v) == u ⨼ v == u ⨽ v == u ⨰ v
-        @test u ∧ v == u ⨱ v
+        @test u ⋅ v == u | v == (u < v) == (u > v) == u ⨼ v == u ⨽ v == u ⊙ v
+        @test u ∧ v == u ⊠ v
         @test v ⨼ B == (v < B)
         @test v ⨽ B == (v > B)
         if V ∉ [PGA3D, CGA3D] # too slow
-            @test A ⨰ B == A << B == (AB + BA) / 2
-            # @test A ×̄ B == A ⨰ B
-            @test A ⨱ B == A >> B == (AB - BA) / 2
+            @test A ⊙ B == A << B == (AB + BA) / 2
+            @test A ⊠ B == A >> B == (AB - BA) / 2
             @test A ⊛ B == A % B
         end
     
@@ -287,9 +286,9 @@ end
         @test u ∧ A ∧ v == - v ∧ A ∧ u                                                           # A.4.17
     
         if V ∉ [Spacetime, PGA2D, PGA3D, CGA2D, CGA3D] # too slow
-            @test AB == A ⨱ B + A ⨰ B
-            @test A ⨰ B == B ⨰ A
-            @test A ⨱ B == - B ⨱ A
+            @test AB == A ⊙ B + A ⊠ B
+            @test A ⊙ B == B ⊙ A
+            @test A ⊠ B == - B ⊠ A
     
             @test A ⊛ B == B ⊛ A
             
