@@ -1,6 +1,8 @@
 language: julia
 os:
   - linux
+dist: xenial
+sudo: true
 julia:
   - 1.0
   - 1.1
@@ -8,7 +10,9 @@ julia:
 addons:
   apt:
     packages:
+      - python3-setuptools
       - python3-pip
+      - python3-wheel
 env:
   global:
     - PYTHON=python3
