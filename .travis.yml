@@ -1,6 +1,7 @@
 language: julia
 os:
   - linux
+sudo: true
 julia:
   - 1.0
   - 1.1
@@ -19,6 +20,6 @@ matrix:
 git:
     depth: 1
 before_install:
-  - pip install --upgrade pip --user
+  - pip install --upgrade pip
 after_success:
   - julia -e 'using Pkg; cd(Pkg.dir("GAlgebra")); Pkg.add("Coverage"); using Coverage; Codecov.submit(Codecov.process_folder())'
