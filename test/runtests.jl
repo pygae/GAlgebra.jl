@@ -356,7 +356,7 @@ end
         sigV = signature(V)
         @time @testset "G$sigV" begin
             # @test_broken 1==1 # for triggering error
-            # test_all(V)
+            test_all(V)
         end
 
         # The following takes forever
