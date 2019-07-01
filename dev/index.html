@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Home · GAlgebra.jl</title><link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/4.2.0/normalize.min.css" rel="stylesheet" type="text/css"/><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.2.0/require.min.js" data-main="assets/documenter.js"></script><script src="siteinfo.js"></script><script src="../versions.js"></script><link href="assets/documenter.css" rel="stylesheet" type="text/css"/></head><body><nav class="toc"><h1>GAlgebra.jl</h1><select id="version-selector" onChange="window.location.href=this.value" style="visibility: hidden"></select><form class="search" id="search-form" action="search/"><input id="search-query" name="q" type="text" placeholder="Search docs"/></form><ul><li class="current"><a class="toctext" href>Home</a><ul class="internal"><li><a class="toctext" href="#Development-Status-1">Development Status</a></li><li><a class="toctext" href="#Getting-Started-1">Getting Started</a></li><li><a class="toctext" href="#Installation-1">Installation</a></li></ul></li><li><a class="toctext" href="api/">API</a></li></ul></nav><article id="docs"><header><nav><ul><li><a href>Home</a></li></ul><a class="edit-page" href="https://github.com/pygae/GAlgebra.jl/blob/master/docs/src/index.md"><span class="fa"></span> Edit on GitHub</a></nav><hr/><div id="topbar"><span>Home</span><a class="fa fa-bars" href="#"></a></div></header><h1><a class="nav-anchor" id="GAlgebra.jl-1" href="#GAlgebra.jl-1">GAlgebra.jl</a></h1><p>Julia interface to <a href="https://github.com/pygae/galgebra">GAlgebra</a>, a symbolic Geometric Algebra/Calculus package for SymPy.</p><h2><a class="nav-anchor" id="Development-Status-1" href="#Development-Status-1">Development Status</a></h2><p>Very early. But it already works and has many tests.</p><table><tr><th style="text-align: center"><strong>Build Status</strong></th></tr><tr><td style="text-align: center"><a href="https://travis-ci.com/pygae/GAlgebra.jl"><img src="https://travis-ci.com/pygae/GAlgebra.jl.svg?branch=master" alt/></a> <a href="https://codecov.io/gh/pygae/GAlgebra.jl"><img src="https://img.shields.io/codecov/c/github/pygae/GAlgebra.jl.svg" alt/></a></td></tr></table><h2><a class="nav-anchor" id="Getting-Started-1" href="#Getting-Started-1">Getting Started</a></h2><p>GAlgebra.jl itself doesn&#39;t depend on <a href="https://github.com/JuliaPy/SymPy.jl">SymPy.jl</a>, but is designed to work with it.</p><p>After installing SymPy.jl and GAlgebra.jl (see below for instructions), you may experiment with GAlgebra.jl just like in the Python version of GAlgebra (though <a href="https://docs.julialang.org/en/v1/manual/noteworthy-differences/#Noteworthy-differences-from-Python-1">there&#39;re some syntax differences between Python and Julia</a> like <code>True</code>/<code>true</code>, <code>&#39;</code>/<code>&quot;</code> etc.).</p><p>For example, you may start with:</p><pre><code class="language-julia">import SymPy: symbols, sympy, Sym
+using GAlgebra
+
+# In console, uncomment to enable colored printing with ANSI escape sequences 
+# galgebra.printer.Eprint()
+# In Jupyter, uncomment to enable LaTeX printing with MathJax
+# galgebra.printer.Format()
+
+(x, y, z) = xyz = symbols(&quot;x,y,z&quot;,real=true)
+o3d = galgebra.ga.Ga(&quot;e&quot;, g=[1, 1, 1], coords=xyz)
+
+u = o3d.mv(&quot;u&quot;, &quot;vector&quot;)
+v = o3d.mv(&quot;v&quot;, &quot;vector&quot;)
+A = o3d.mv(&quot;A&quot;, &quot;mv&quot;)
+R = o3d.mv(&quot;R&quot;, &quot;spinor&quot;)
+# Volume element
+I = o3d.I()
+
+# Wedge product: ∧ \wedge
+v ∧ A
+# Hestenes&#39; inner product: ⋅ \cdot
+v ⋅ A
+# Left contraction: ⨼ \intprod
+v ⨼ A
+# Right contraction: ⨽ \intprodr
+v ⨽ A
+# Scalar product: ⊛ \circledast
+# A ⊛ B = &lt;A B†&gt;
+v ⊛ A
+# Commutator product: ⊠ \boxtimes
+# A⊠B = (AB-BA)/2
+v ⊠ A
+# Anti-commutator product: ⊙ \odot
+# A⊙B = (AB+BA)/2
+v ⊙ A
+
+# Norm: norm(A) = A.norm() := ||A||
+norm(v)
+
+# Inverse: postfix ⁻¹ \^-\^1
+# (A)⁻¹ = A^-1 = inv(A) = A.inv()
+(R)⁻¹
+R^-1
+inv(R)
+
+# Reversion: ~A = rev(A) = A.rev()
+# A^† is usually used in literature
+~A
+rev(A)
+
+# Dual: postfix &#39;
+# orthogonal complement, Λ^p -&gt; Λ^(n-p)
+# note: Ga.dual_mode_value is default to &quot;I+&quot;, so A&#39; = A * I
+# change Ga.dual_mode_value to get a different definition
+A&#39;
+dual(A)
+
+# Grade involution: postfix ˣ \^x
+# (A)ˣ = A[:*] = involute(A) := A+ - A- = A.even() - A.odd()
+# A^* is usually used in literature
+(A)ˣ
+involute(A)
+
+# Clifford conjugate: postfix ǂ \doublepipe
+# (A)ǂ = conj(A) := ((A)^*)^†
+(A)ǂ
+conj(A)
+
+# Projection: proj(B, A) = A.project_in_blade(B)
+proj(u, v)
+
+# Reflection: refl(B, A) = A.reflect_in_blade(B)
+refl(u, v)
+
+# Rotation: rot(itheta, A) = A.rotate_multivector(itheta)
+# rotate the multivector A by the 2-blade itheta
+rot(u ∧ v, A)
+
+# Natural base exponential of x: e^x
+exp(u ∧ v)
+
+# Grade-i part: A[i] = A.grade(i) := &lt;A&gt;_i
+A[2]
+
+# Scalar (grade-0) part: scalar(A) = A.scalar() := &lt;A&gt; = &lt;A&gt;_0
+# note: it returns a SymPy expression unlike A[0] which returns a Mv object
+scalar(A)
+
+# Even-grade part: A[:+] = (A)₊ = even(A) = A.even() := A+
+A[:+]
+even(A)
+
+# Odd-grade part: A[:-] = (A)₋ = odd(A) = A.odd() := A-
+A[:-]
+odd(A)</code></pre><p>Note: enter unicode symbols like <code>∧</code> with corresponding LaTeX commands like <code>\wedge</code> by <a href="https://pkg.julialang.org/docs/julia/THl1k/1.1.0/manual/unicode-input.html">Tab completion</a> which are provided in the comments.</p><p>So far only <code>galgebra.ga.Ga</code> and <code>galgebra.mv.Mv</code> have been verified to work in Julia, see <a href="https://github.com/pygae/GAlgebra.jl/tree/master/test/runtests.jl">tests</a>. The tests verified many identities in Linear Algebra and Geometric Algebra.</p><p>See <a href="https://github.com/pygae/galgebra/tree/15-print-pow/examples">examples of GAlgebra</a> for more examples in Python. With some small changes, they can be ported to Julia.</p><h2><a class="nav-anchor" id="Installation-1" href="#Installation-1">Installation</a></h2><p>The package can be installed with the Julia package manager. From the Julia REPL, type <code>]</code> to enter the <strong>Pkg REPL mode</strong> (you&#39;ll see a prompt like <code>(v1.1) pkg&gt;</code>) and run:</p><pre><code class="language-none">dev https://github.com/pygae/GAlgebra.jl.git</code></pre><p>The installation process will take a while, because it will install <a href="https://github.com/JuliaPy/PyCall.jl">PyCall.jl</a> and its dependencies and it will also use <code>pip</code> to install <a href="https://github.com/pygae/galgebra">GAlgebra</a> (it currently requires <code>sympy==1.3</code> so this prerequisite is also ensured).</p><p>Now you may run GAlgebra.jl tests in Julia <strong>Pkg REPL mode</strong>: </p><pre><code class="language-none">test GAlgebra</code></pre><p>At the first time it will take a while, because SymPy.jl is specified as a test dependency so it&#39;ll be installed.</p><p>Then you&#39;ll see something like:</p><pre><code class="language-none">   Testing GAlgebra
+ Resolving package versions...
+Test Summary: | Pass  Broken  Total
+GAlgebra.jl   | 1289       1   1290
+   Testing GAlgebra tests passed</code></pre><p>Hint: To get back to the Julia REPL please press backspace, see <a href="https://docs.julialang.org/en/v1/stdlib/Pkg/index.html">Pkg doc</a> to learn more.</p><footer><hr/><a class="next" href="api/"><span class="direction">Next</span><span class="title">API</span></a></footer></article></body></html>
