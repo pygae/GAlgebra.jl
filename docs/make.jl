@@ -25,6 +25,6 @@ makedocs(
     ]
 )
 
-# deploydocs(
-#     repo   = "github.com/xxx/yyy.git",
-# )
+deploydocs(
+    repo   = "github.com/pygae/GAlgebra.jl.git"
+)
