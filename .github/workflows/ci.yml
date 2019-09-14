@@ -35,7 +35,12 @@ jobs:
           julia --project=@. -e "using Pkg; Pkg.instantiate();"
           julia --project=@. -e "using Pkg; Pkg.build(\"${{ matrix.project }}\");"
           julia --project=@. -e "using Pkg; Pkg.test(\"${{ matrix.project }}\", coverage=true);"
-      - name: "Coverage"
+      - name: "Generate coverage"
+        env:
+          JULIA_PROJECT: "@."
+        run: julia --project=@. -e 'using Pkg; cd(Pkg.dir("GAlgebra")); Pkg.add("Coverage"); using Coverage; LCOV.writefile("coverage-lcov.info", Codecov.process_folder())'
+        if: success()
+      - name: "Submit coverage"
         uses: codecov/codecov-action@v1.0.2
         with:
           token: ${{secrets.CODECOV_TOKEN}}
