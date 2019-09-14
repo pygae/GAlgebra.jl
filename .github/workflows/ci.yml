@@ -18,7 +18,6 @@ jobs:
         python: [ '3.x' ]
     
     steps:
-      - uses: actions/checkout@v1.0.0
       - name: Setup python
         uses: actions/setup-python@v1
         with:
@@ -28,9 +27,12 @@ jobs:
         uses: julia-actions/setup-julia@v0.2
         with:
           version: ${{ matrix.julia-version }}
+      - name: "Check out"
+        uses: actions/checkout@v1.0.0
+      - name: "Build"
+        run: julia --color=yes -e "if VERSION < v\"0.7.0-DEV.5183\"; Pkg.clone(pwd()); Pkg.build(\"GAlgebra\"); else using Pkg; if VERSION >= v\"1.1.0-rc1\"; Pkg.build(verbose=true); else Pkg.build(); end; end"
       - name: "Test"
-        run: julia -e 'using Pkg; Pkg.build(); Pkg.test(coverage=true)'
+        run: julia --check-bounds=yes --color=yes -e "if VERSION < v\"0.7.0-DEV.5183\"; Pkg.test(\"GAlgebra\", coverage=true); else using Pkg; Pkg.test(coverage=true); end"
       - name: "Coverage"
         run: julia -e 'using Pkg; cd(Pkg.dir("GAlgebra")); Pkg.add("Coverage"); using Coverage; Codecov.submit(Codecov.process_folder())'
         if: success()
-
