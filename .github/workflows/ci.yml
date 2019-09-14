@@ -31,9 +31,15 @@ jobs:
       - name: "Check out"
         uses: actions/checkout@v1.0.0
       - name: "Build"
+        env:
+          JULIA_PROJECT: "@."
         run: julia --project="${{ matrix.project }}" --color=yes -e "if VERSION < v\"0.7.0-DEV.5183\"; Pkg.clone(pwd()); Pkg.build(\"${{ matrix.project }}\"); else using Pkg; if VERSION >= v\"1.1.0-rc1\"; Pkg.build(verbose=true); else Pkg.build(); end; end"
       - name: "Test"
+        env:
+          JULIA_PROJECT: "@."
         run: julia --project="${{ matrix.project }}" --check-bounds=yes --color=yes -e "if VERSION < v\"0.7.0-DEV.5183\"; Pkg.test(\"${{ matrix.project }}\", coverage=true); else using Pkg; Pkg.test(coverage=true); end"
       - name: "Coverage"
+        env:
+          JULIA_PROJECT: "@."
         run: julia -e 'using Pkg; cd(Pkg.dir("GAlgebra")); Pkg.add("Coverage"); using Coverage; Codecov.submit(Codecov.process_folder())'
         if: success()
