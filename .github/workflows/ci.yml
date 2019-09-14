@@ -16,6 +16,7 @@ jobs:
         julia-version: [1.0.4, 1.1.1]
         os: [ubuntu-latest]
         python: [ '3.x' ]
+        project: ['GAlgebra']
     
     steps:
       - name: Setup python
@@ -30,9 +31,9 @@ jobs:
       - name: "Check out"
         uses: actions/checkout@v1.0.0
       - name: "Build"
-        run: julia --color=yes -e "if VERSION < v\"0.7.0-DEV.5183\"; Pkg.clone(pwd()); Pkg.build(\"GAlgebra\"); else using Pkg; if VERSION >= v\"1.1.0-rc1\"; Pkg.build(verbose=true); else Pkg.build(); end; end"
+        run: julia --project="${{ matrix.project }}" --color=yes -e "if VERSION < v\"0.7.0-DEV.5183\"; Pkg.clone(pwd()); Pkg.build(\"${{ matrix.project }}\"); else using Pkg; if VERSION >= v\"1.1.0-rc1\"; Pkg.build(verbose=true); else Pkg.build(); end; end"
       - name: "Test"
-        run: julia --check-bounds=yes --color=yes -e "if VERSION < v\"0.7.0-DEV.5183\"; Pkg.test(\"GAlgebra\", coverage=true); else using Pkg; Pkg.test(coverage=true); end"
+        run: julia --project="${{ matrix.project }}" --check-bounds=yes --color=yes -e "if VERSION < v\"0.7.0-DEV.5183\"; Pkg.test(\"${{ matrix.project }}\", coverage=true); else using Pkg; Pkg.test(coverage=true); end"
       - name: "Coverage"
         run: julia -e 'using Pkg; cd(Pkg.dir("GAlgebra")); Pkg.add("Coverage"); using Coverage; Codecov.submit(Codecov.process_folder())'
         if: success()
