@@ -78,7 +78,7 @@ Division.
 
 ``A / B \equiv A B^{-1}``. Only valid when ``B`` has inverse.
 """
-@define_op(Mv, /, __div__)
+@define_op(Mv, /, __truediv__)
 
 @doc raw"""
 Comparisons of equality.
@@ -350,7 +350,7 @@ Odd-grade part.
 @define_rop(Mv, Number, -, __rsub__)
 @define_lop(Mv, Number, *, __mul__)
 @define_rop(Mv, Number, *, __rmul__)
-@define_lop(Mv, Number, /, __div__)
+@define_lop(Mv, Number, /, __truediv__)
 @define_rop(Mv, Number, /, __rdiv__)
 @define_lop(Mv, Number, ==, __eq__)
 @define_lop(Mv, Number, !=, __ne__)
