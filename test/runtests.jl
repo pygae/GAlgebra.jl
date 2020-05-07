@@ -172,6 +172,14 @@ end
         @test (-α) * v == α * (-v) == -α * v
     
         # The following tests verified many identities in https://arxiv.org/abs/1205.5935
+
+        # Summary
+        #
+        # - The formulas after XXX are work-in-progress
+        # - The following formulas are skip for now
+        #   - A.4.{25-27,32,33}
+        # - The following formulas are broken for now
+        #   - A.4.35
     
         @test v * v == (v * v).scalar()
         @test v * B == v ⋅ B + v ∧ B == v ⨼ B + v ∧ B
@@ -185,6 +193,13 @@ end
         end
     
         for r ∈ dimV
+
+            if r > 0
+                vectors_a = [V.mv("a_$(i)", "vector") for i in 1:r]
+
+                @test reduce(∧, vectors_a) == reduce(*, vectors_a)[r]                               # A.4.12
+            end
+
             @test (A + B)[r] == A[r] + B[r]
             @test (λ * A)[r] == (A * λ)[r] == λ * A[r]
     
@@ -248,7 +263,7 @@ end
     
         @test A == sum([A[r] for r ∈ dimV])
         @test A[-3] == 0
-    
+
         @test v ⨼ A == (v * A - (A)ˣ * v)/2                                                      # A.4.13
         @test v ∧ A == (v * A + (A)ˣ * v)/2                                                      # A.4.14
         @test A ⨽ v == - v ⨼ (A)ˣ                                                                # A.4.15
