@@ -177,9 +177,9 @@ end
         #
         # - The formulas after XXX are work-in-progress
         # - The following formulas are skip for now
-        #   - A.4.{25-27,32,33}
+        #   - A.4.27
         # - The following formulas are broken for now
-        #   - A.4.35
+        #   - A.4.{33, 35}
     
         @test v * v == (v * v).scalar()
         @test v * B == v ⋅ B + v ∧ B == v ⨼ B + v ∧ B
@@ -193,12 +193,6 @@ end
         end
     
         for r ∈ dimV
-
-            if r > 0
-                vectors_a = [V.mv("a_$(i)", "vector") for i in 1:r]
-
-                @test reduce(∧, vectors_a) == reduce(*, vectors_a)[r]                               # A.4.12
-            end
 
             @test (A + B)[r] == A[r] + B[r]
             @test (λ * A)[r] == (A * λ)[r] == λ * A[r]
@@ -219,6 +213,38 @@ end
     
             Br = B[r]
             Ar ⨼ Br == Ar ⨽ Br == (Ar * Br).scalar()
+
+            if r > 0
+                a = V.mv("a", "vector")
+                a₁₋ᵣ = [V.mv("a_$(i)", "vector") for i in 1:r]
+
+                wedge_a₁₋ᵣ = reduce(∧, a₁₋ᵣ)
+                prod_a₁₋ᵣ = reduce(*, a₁₋ᵣ)
+
+                @test wedge_a₁₋ᵣ == prod_a₁₋ᵣ[r]                                                  # A.4.12
+
+                A₁₋ᵣ = prod_a₁₋ᵣ
+
+                for s ∈ dimV
+                    Bs = B[s]
+                    A_Bs_Aǂ = A₁₋ᵣ * Bs * (A₁₋ᵣ)ǂ
+
+                    @test A_Bs_Aǂ == A_Bs_Aǂ[s]                                                                              # A.4.32
+                end
+
+                # TODO this is failing for now
+                # @test (A₁₋ᵣ * B * (A₁₋ᵣ)ǂ) ∧ (A₁₋ᵣ * C * (A₁₋ᵣ)ǂ) == A₁₋ᵣ.norm()^2 * A₁₋ᵣ * (B ∧ C) * (A₁₋ᵣ)ǂ        # A.4.33
+
+                if r > 1
+                    function reduce_except(op, arr, j)
+                        enumerate(arr) |> o -> Iterators.filter(e -> e[1] != j, o) |> 
+                            o -> Iterators.map(e-> e[2], o) |> o -> reduce(op, o)
+                    end
+
+                    @test a ⨼ wedge_a₁₋ᵣ == sum([(-1)^(j-1) * (a ⨼ a₁₋ᵣ[j]) * reduce_except(∧, a₁₋ᵣ, j) for j in 1:r])  # A.4.25
+                    @test a₁₋ᵣ[1] ∧ reduce_except(∧, a₁₋ᵣ, 1) == wedge_a₁₋ᵣ                                             # A.4.26
+                end
+            end
     
             for s ∈ dimV
                 @test A[r][s] == (if r == s; A[r] else 0 end)
@@ -292,11 +318,11 @@ end
         @test A ⨽ B == sum([sum([(A[r] * B[s])[r - s] for r ∈ dimV]) for s ∈ dimV])             # A.4.8
         @test A ∧ B == sum([sum([(A[r] * B[s])[r + s] for r ∈ dimV]) for s ∈ dimV])             # A.4.9
     
-        @test (A ∧ B) ∧ C == A ∧ (B ∧ C) == A ∧ B ∧ C                                           # A.4.28
+        @test (A ∧ B) ∧ C == A ∧ (B ∧ C) == A ∧ B ∧ C                                       # A.4.28
         @test A ⨼ (B ⨽ C) == (A ⨼ B) ⨽ C                                                        # A.4.29
         @test A ⨼ (B ⨼ C) == (A ∧ B) ⨼ C                                                        # A.4.30
         @test A ⨽ (B ∧ C) == (A ⨽ B) ⨽ C                                                        # A.4.31
-        @test (A ∧ B) ⨼ C == A ⨼ (B ⨼ C)
+        @test (A ∧ B) ⨼ C == A ⨼ (B ⨼ C)                # commit 3ca67dea999f955c71a5dd2c18d819afbb971e85
     
         @test u ∧ A ∧ v == - v ∧ A ∧ u                                                           # A.4.17
     
