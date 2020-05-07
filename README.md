@@ -120,7 +120,7 @@ Note: enter unicode symbols like `∧` with corresponding LaTeX commands like `\
 
 So far only `galgebra.ga.Ga` and `galgebra.mv.Mv` have been verified to work in Julia, see [tests](https://github.com/pygae/GAlgebra.jl/tree/master/test/runtests.jl). The tests verified many identities in Linear Algebra and Geometric Algebra.
 
-See [examples of GAlgebra](https://github.com/pygae/galgebra/tree/15-print-pow/examples) for more examples in Python. With some small changes, they can be ported to Julia.
+See [examples of GAlgebra](https://github.com/pygae/galgebra/tree/master/examples) for more examples in Python. With some small changes, they can be ported to Julia.
 
 ## Installation
 
