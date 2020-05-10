@@ -388,10 +388,10 @@ end
     # [Hyper, Dual, ℂ] # for quick test any of p, q, r is 1
 
     setV = if "CI" in keys(ENV)
-        if "CRON_CI" in keys(ENV)
+        if ENV["GITHUB_EVENT_NAME"] == "schedule"
             [Cl2, Cl3, ℂ, ℍ, Hyper, Dual, Spacetime, PGA2D, PGA3D, CGA2D] #, CGA3D]
         else
-            [Cl2, Cl3, ℂ, ℍ, Hyper, Dual, Spacetime, PGA2D]
+            [Cl2, Cl3, ℂ, ℍ, Hyper, Dual, Spacetime]
         end
     else
         [Cl2, Cl3, ℂ, ℍ, Hyper, Dual]
