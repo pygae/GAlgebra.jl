@@ -387,8 +387,8 @@ end
 
     # [Hyper, Dual, ℂ] # for quick test any of p, q, r is 1
 
-    setV = if "CI" in keys(ENV)
-        [Cl2, Cl3, ℂ, ℍ, Hyper, Dual, Spacetime, PGA2D, PGA3D, CGA2D, CGA3D]
+    setV = if "CI" in keys(ENV) && "CRON_CI" in keys(ENV)
+        [Cl2, Cl3, ℂ, ℍ, Hyper, Dual, Spacetime, PGA2D, PGA3D, CGA2D] #, CGA3D]
     else
         [Cl2, Cl3, ℂ, ℍ, Hyper, Dual]
     end
