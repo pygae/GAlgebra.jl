@@ -8,7 +8,7 @@ Very early. But it already works and has many tests.
 
 | **Build Status**                                                                                |
 |:-----------------------------------------------------------------------------------------------:|
-| [![](https://travis-ci.com/pygae/GAlgebra.jl.svg?branch=master)](https://travis-ci.com/pygae/GAlgebra.jl) [![](https://img.shields.io/codecov/c/github/pygae/GAlgebra.jl.svg)](https://codecov.io/gh/pygae/GAlgebra.jl) |
+| ![CI](https://github.com/pygae/GAlgebra.jl/workflows/CI/badge.svg) [![](https://img.shields.io/codecov/c/github/pygae/GAlgebra.jl.svg)](https://codecov.io/gh/pygae/GAlgebra.jl) |
 
 ## Getting Started
 
