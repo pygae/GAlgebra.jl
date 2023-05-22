@@ -15,7 +15,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        julia-version: [1.0.4, 1.1.1]
+        julia-version: ['1.8.4']
         os: [ubuntu-latest]
         python: [ '3.x' ]
         project: ['GAlgebra']
@@ -27,7 +27,7 @@ jobs:
           python-version: ${{ matrix.python }}
           architecture: x64
       - name: "Set up Julia"
-        uses: julia-actions/setup-julia@v0.2
+        uses: julia-actions/setup-julia@v1
         with:
           version: ${{ matrix.julia-version }}
       - name: "Check out"
