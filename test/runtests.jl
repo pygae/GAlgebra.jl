@@ -322,7 +322,7 @@ end
 
                     A₁₋ᵣ = prod_a₁₋ᵣ
 
-                    for s ∈ dimV
+                    @testset verbose=true "s: $r" for s ∈ dimV
                         Bs = B[s]
                         A_Bs_Aǂ = A₁₋ᵣ * Bs * (A₁₋ᵣ)ǂ
 
