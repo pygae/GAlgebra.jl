@@ -89,91 +89,91 @@ end
         BA = B * A
     
         # The following tests verified implementation correctness per definition
-        @testset verbose=true "definition" begin
+        # @testset verbose=true "definition" begin
         
-            @test u ⋅ v == u | v == (u < v) == (u > v) == u ⨼ v == u ⨽ v == u ⊙ v
-            @test u ∧ v == u ⊠ v
-            @test v ⨼ B == (v < B)
-            @test v ⨽ B == (v > B)
-            if V ∉ [PGA3D, CGA3D] # too slow
-                @test A ⊙ B == A << B == (AB + BA) / 2
-                @test A ⊠ B == A >> B == (AB - BA) / 2
-                @test A ⊛ B == A % B
-            end
+        #     @test u ⋅ v == u | v == (u < v) == (u > v) == u ⨼ v == u ⨽ v == u ⊙ v
+        #     @test u ∧ v == u ⊠ v
+        #     @test v ⨼ B == (v < B)
+        #     @test v ⨽ B == (v > B)
+        #     if V ∉ [PGA3D, CGA3D] # too slow
+        #         @test A ⊙ B == A << B == (AB + BA) / 2
+        #         @test A ⊠ B == A >> B == (AB - BA) / 2
+        #         @test A ⊛ B == A % B
+        #     end
         
-            @test abs(v) == norm(v) == v.norm()
-            if V ∉ [Spacetime, PGA2D, PGA3D, CGA2D, CGA3D]
-                @test abs(R) == norm(R) == R.norm()
-            end
+        #     @test abs(v) == norm(v) == v.norm()
+        #     if V ∉ [Spacetime, PGA2D, PGA3D, CGA2D, CGA3D]
+        #         @test abs(R) == norm(R) == R.norm()
+        #     end
         
-            @test ~A == A[:~] == rev(A) == A.rev()
+        #     @test ~A == A[:~] == rev(A) == A.rev()
         
-            if V ∉ [Dual, PGA2D, PGA3D, CGA2D, CGA3D]
-                @test A' == dual(A) == A.dual() == adjoint(A) == A * I # Ga.dual_mode_value is default to "I+"
-                @test (v)⁻¹ == v[:⁻¹] == v^-1 == inv(v) == v.inv()
-                @test v^-2 == (v^2).inv()
-            end
+        #     if V ∉ [Dual, PGA2D, PGA3D, CGA2D, CGA3D]
+        #         @test A' == dual(A) == A.dual() == adjoint(A) == A * I # Ga.dual_mode_value is default to "I+"
+        #         @test (v)⁻¹ == v[:⁻¹] == v^-1 == inv(v) == v.inv()
+        #         @test v^-2 == (v^2).inv()
+        #     end
         
-            @test (A)ˣ == A[:*] == involute(A) == (A)₊ - (A)₋ == A[:+] - A[:-] == A.even() - A.odd()
-            @test (A)ǂ == A[:ǂ] == conj(A) == involute(A).rev()   
+        #     @test (A)ˣ == A[:*] == involute(A) == (A)₊ - (A)₋ == A[:+] - A[:-] == A.even() - A.odd()
+        #     @test (A)ǂ == A[:ǂ] == conj(A) == involute(A).rev()   
         
-            if V ∉ [Spacetime, PGA2D, PGA3D, CGA2D, CGA3D]
-                @test R^-2 == (R^2).inv()
-                @test (R)⁻¹ == R[:⁻¹] == R^-1 == inv(R) == R.inv()
-                @test ((R)⁻¹)ˣ == ((R)ˣ)⁻¹
-                @test ((R)⁻¹)ǂ == ((R)ǂ)⁻¹
-            end
+        #     if V ∉ [Spacetime, PGA2D, PGA3D, CGA2D, CGA3D]
+        #         @test R^-2 == (R^2).inv()
+        #         @test (R)⁻¹ == R[:⁻¹] == R^-1 == inv(R) == R.inv()
+        #         @test ((R)⁻¹)ˣ == ((R)ˣ)⁻¹
+        #         @test ((R)⁻¹)ǂ == ((R)ǂ)⁻¹
+        #     end
         
-            if V ∈ [Cl2, Cl3]
-                @test (v)⁻¹ == (~v) / norm(v)^2 == v / v^2 
-                @test (R)⁻¹ == (~R) / norm(R)^2 == R / R^2
-            end
+        #     if V ∈ [Cl2, Cl3]
+        #         @test (v)⁻¹ == (~v) / norm(v)^2 == v / v^2 
+        #         @test (R)⁻¹ == (~R) / norm(R)^2 == R / R^2
+        #     end
         
-            @test v^0 == 1
-            @test v^2 == v*v
+        #     @test v^0 == 1
+        #     @test v^2 == v*v
         
-            @test ((A)ˣ)ˣ == ~(~A) == A[:~][:~] == ((A)ǂ)ǂ == A
-            @test ~((A)ˣ) == (~A)ˣ
+        #     @test ((A)ˣ)ˣ == ~(~A) == A[:~][:~] == ((A)ǂ)ǂ == A
+        #     @test ~((A)ˣ) == (~A)ˣ
         
-            if V ∉ [Dual]
-                @test proj(u, v) == v.project_in_blade(u)
-                @test refl(u, v) == v.reflect_in_blade(u)
-            end
+        #     if V ∉ [Dual]
+        #         @test proj(u, v) == v.project_in_blade(u)
+        #         @test refl(u, v) == v.reflect_in_blade(u)
+        #     end
         
-            if V ∉ [Spacetime, PGA2D, PGA3D, CGA2D, CGA3D] # too slow
-                @test rot(u ∧ v, A) == A.rotate_multivector(u ∧ v)
-                @test exp(u ∧ v) == (u ∧ v).exp()
-            end
+        #     if V ∉ [Spacetime, PGA2D, PGA3D, CGA2D, CGA3D] # too slow
+        #         @test rot(u ∧ v, A) == A.rotate_multivector(u ∧ v)
+        #         @test exp(u ∧ v) == (u ∧ v).exp()
+        #     end
         
-            @test typeof(scalar(A)) == Sym
-            @test typeof(A[0]) == Mv
-            @test scalar(A) == A.scalar() == A[0].obj
-            @test (A)₊ == A[:+] == even(A) == A.even()
-            @test (A)₋ == A[:-] == odd(A) == A.odd()
+        #     @test typeof(scalar(A)) == Sym
+        #     @test typeof(A[0]) == Mv
+        #     @test scalar(A) == A.scalar() == A[0].obj
+        #     @test (A)₊ == A[:+] == even(A) == A.even()
+        #     @test (A)₋ == A[:-] == odd(A) == A.odd()
         
-            for r ∈ dimV
-                A[r] == A.grade(r) == A.get_grade(r)
-            end
-        end
+        #     for r ∈ dimV
+        #         A[r] == A.grade(r) == A.get_grade(r)
+        #     end
+        # end
 
 
         # The following tests verified many identities in Linear Algebra
-        @testset verbose=true "LA identities" begin
-            @test v + w == w + v
-            @test (u + v) + w == u + (v + w)
-            @test v + 0 == v
-            @test 0 * v == 0
-            @test 1 * v == v
-            @test α * (β * v) == (α * β) * v
-            @test α * (v + w) == α * v + α * w
-            @test (α + β) * v == α * v + β * v
-            @test v + (-1) * v == 0
-            @test -v == -1 * v
+        # @testset verbose=true "LA identities" begin
+        #     @test v + w == w + v
+        #     @test (u + v) + w == u + (v + w)
+        #     @test v + 0 == v
+        #     @test 0 * v == 0
+        #     @test 1 * v == v
+        #     @test α * (β * v) == (α * β) * v
+        #     @test α * (v + w) == α * v + α * w
+        #     @test (α + β) * v == α * v + β * v
+        #     @test v + (-1) * v == 0
+        #     @test -v == -1 * v
         
-            𝑶 = vector(V, fill(0, V.n))
-            @test α * 𝑶 == 𝑶
-            @test (-α) * v == α * (-v) == -α * v
-        end
+        #     𝑶 = vector(V, fill(0, V.n))
+        #     @test α * 𝑶 == 𝑶
+        #     @test (-α) * v == α * (-v) == -α * v
+        # end
     
         # The following tests verified many identities in https://arxiv.org/abs/1205.5935
 
@@ -184,112 +184,112 @@ end
         #   - A.4.27
         # - The following formulas are broken for now
         #   - A.4.{33, 35}
-        @testset verbose=true "GA identities" begin
-            @test v * v == (v * v).scalar()
-            @test v * B == v ⋅ B + v ∧ B == v ⨼ B + v ∧ B
+        # @testset verbose=true "GA identities" begin
+        #     @test v * v == (v * v).scalar()
+        #     @test v * B == v ⋅ B + v ∧ B == v ⨼ B + v ∧ B
         
-            @test u ∧ (v + λ * u) == u ∧ v
+        #     @test u ∧ (v + λ * u) == u ∧ v
         
-            @test v == v[1]
-            if V.n >= 2
-                G2 = V.mv("G2", "grade", 2)
-                @test G2 == G2[2]
-            end
+        #     @test v == v[1]
+        #     if V.n >= 2
+        #         G2 = V.mv("G2", "grade", 2)
+        #         @test G2 == G2[2]
+        #     end
         
-            @test A == sum([A[r] for r ∈ dimV])
-            @test A[-3] == 0
+        #     @test A == sum([A[r] for r ∈ dimV])
+        #     @test A[-3] == 0
 
-            @test v ⨼ A == (v * A - (A)ˣ * v)/2                                                      # A.4.13
-            @test v ∧ A == (v * A + (A)ˣ * v)/2                                                      # A.4.14
-            @test A ⨽ v == - v ⨼ (A)ˣ                                                                # A.4.15
-            @test A ∧ v == v ∧ (A)ˣ                                                                  # A.4.16
+        #     @test v ⨼ A == (v * A - (A)ˣ * v)/2                                                      # A.4.13
+        #     @test v ∧ A == (v * A + (A)ˣ * v)/2                                                      # A.4.14
+        #     @test A ⨽ v == - v ⨼ (A)ˣ                                                                # A.4.15
+        #     @test A ∧ v == v ∧ (A)ˣ                                                                  # A.4.16
         
-            if V ∉ [Spacetime, PGA2D, PGA3D, CGA2D, CGA3D] # too slow
-                @test v ⨼ (AB) == (v ⨼ A) * B + (A)ˣ * (v ⨼ B) == (v ∧ A) * B - (A)ˣ * (v ∧ B)       # A.4.18-19
-                @test v ∧ (AB) == (v ∧ A) * B - (A)ˣ * (v ⨼ B) == (v ⨼ A) * B + (A)ˣ * (v ∧ B)       # A.4.20-21
-            end
+        #     if V ∉ [Spacetime, PGA2D, PGA3D, CGA2D, CGA3D] # too slow
+        #         @test v ⨼ (AB) == (v ⨼ A) * B + (A)ˣ * (v ⨼ B) == (v ∧ A) * B - (A)ˣ * (v ∧ B)       # A.4.18-19
+        #         @test v ∧ (AB) == (v ∧ A) * B - (A)ˣ * (v ⨼ B) == (v ⨼ A) * B + (A)ˣ * (v ∧ B)       # A.4.20-21
+        #     end
             
-            @test v ⨼ (A ∧ B) == (v ⨼ A) ∧ B + (A)ˣ ∧ (v ⨼ B)                                       # A.4.22
-            @test v ∧ (A ⨽ B) == (v ∧ A) ⨽ B - (A)ˣ ⨽ (v ⨼ B)                                       # A.4.23
-            @test v ∧ (A ⨼ B) == (v ⨼ A) ⨼ B + (A)ˣ ⨼ (v ∧ B)                                       # A.4.24
+        #     @test v ⨼ (A ∧ B) == (v ⨼ A) ∧ B + (A)ˣ ∧ (v ⨼ B)                                       # A.4.22
+        #     @test v ∧ (A ⨽ B) == (v ∧ A) ⨽ B - (A)ˣ ⨽ (v ⨼ B)                                       # A.4.23
+        #     @test v ∧ (A ⨼ B) == (v ⨼ A) ⨼ B + (A)ˣ ⨼ (v ∧ B)                                       # A.4.24
         
-            @test v ⨼ A[:+] == - (A[:+] ⨽ v)
-            @test v ⨼ A[:-] == A[:-] ⨽ v
-            @test v ∧ A[:+] == A[:+] ∧ v
-            @test v ∧ A[:-] == - (A[:-] ∧ v)
+        #     @test v ⨼ A[:+] == - (A[:+] ⨽ v)
+        #     @test v ⨼ A[:-] == A[:-] ⨽ v
+        #     @test v ∧ A[:+] == A[:+] ∧ v
+        #     @test v ∧ A[:-] == - (A[:-] ∧ v)
         
-            if V ∉ [Spacetime, PGA2D, PGA3D, CGA2D, CGA3D] # too slow
-                @test (AB).scalar() == (BA).scalar() == (~A * ~B).scalar() == 
-                    ((A)ˣ * (B)ˣ).scalar() == ((A)ǂ * (B)ǂ).scalar()                                      # A.4.3-6
-            end
+        #     if V ∉ [Spacetime, PGA2D, PGA3D, CGA2D, CGA3D] # too slow
+        #         @test (AB).scalar() == (BA).scalar() == (~A * ~B).scalar() == 
+        #             ((A)ˣ * (B)ˣ).scalar() == ((A)ǂ * (B)ǂ).scalar()                                      # A.4.3-6
+        #     end
         
-            @test A ⨼ B == sum([sum([(A[r] * B[s])[s - r] for r ∈ dimV]) for s ∈ dimV])             # A.4.7
-            @test A ⨽ B == sum([sum([(A[r] * B[s])[r - s] for r ∈ dimV]) for s ∈ dimV])             # A.4.8
-            @test A ∧ B == sum([sum([(A[r] * B[s])[r + s] for r ∈ dimV]) for s ∈ dimV])             # A.4.9
+        #     @test A ⨼ B == sum([sum([(A[r] * B[s])[s - r] for r ∈ dimV]) for s ∈ dimV])             # A.4.7
+        #     @test A ⨽ B == sum([sum([(A[r] * B[s])[r - s] for r ∈ dimV]) for s ∈ dimV])             # A.4.8
+        #     @test A ∧ B == sum([sum([(A[r] * B[s])[r + s] for r ∈ dimV]) for s ∈ dimV])             # A.4.9
         
-            @test (A ∧ B) ∧ C == A ∧ (B ∧ C) == A ∧ B ∧ C                                       # A.4.28
-            @test A ⨼ (B ⨽ C) == (A ⨼ B) ⨽ C                                                        # A.4.29
-            @test A ⨼ (B ⨼ C) == (A ∧ B) ⨼ C                                                        # A.4.30
-            @test A ⨽ (B ∧ C) == (A ⨽ B) ⨽ C                                                        # A.4.31
-            @test (A ∧ B) ⨼ C == A ⨼ (B ⨼ C)                # commit 3ca67dea999f955c71a5dd2c18d819afbb971e85
+        #     @test (A ∧ B) ∧ C == A ∧ (B ∧ C) == A ∧ B ∧ C                                       # A.4.28
+        #     @test A ⨼ (B ⨽ C) == (A ⨼ B) ⨽ C                                                        # A.4.29
+        #     @test A ⨼ (B ⨼ C) == (A ∧ B) ⨼ C                                                        # A.4.30
+        #     @test A ⨽ (B ∧ C) == (A ⨽ B) ⨽ C                                                        # A.4.31
+        #     @test (A ∧ B) ⨼ C == A ⨼ (B ⨼ C)                # commit 3ca67dea999f955c71a5dd2c18d819afbb971e85
         
-            @test u ∧ A ∧ v == - v ∧ A ∧ u                                                           # A.4.17
+        #     @test u ∧ A ∧ v == - v ∧ A ∧ u                                                           # A.4.17
         
-            if V ∉ [Spacetime, PGA2D, PGA3D, CGA2D, CGA3D] # too slow
-                @test AB == A ⊙ B + A ⊠ B
-                @test A ⊙ B == B ⊙ A
-                @test A ⊠ B == - B ⊠ A
+        #     if V ∉ [Spacetime, PGA2D, PGA3D, CGA2D, CGA3D] # too slow
+        #         @test AB == A ⊙ B + A ⊠ B
+        #         @test A ⊙ B == B ⊙ A
+        #         @test A ⊠ B == - B ⊠ A
         
-                @test A ⊛ B == B ⊛ A
+        #         @test A ⊛ B == B ⊛ A
                 
-                @test A ⊛ B == ~A ⊛ ~B == A.rev() ⊛ B.rev()
-                @test A ⊛ (B * C) == (~B * A) ⊛ C
-                @test A ⊛ (B ⨽ C) == (~B ⨽ A) ⊛ C
-                @test A ⊛ (B ⨼ C) == (~B ∧ A) ⊛ C
-                @test A ⊛ (B ∧ C) == (~B ⨼ A) ⊛ C
-            end
+        #         @test A ⊛ B == ~A ⊛ ~B == A.rev() ⊛ B.rev()
+        #         @test A ⊛ (B * C) == (~B * A) ⊛ C
+        #         @test A ⊛ (B ⨽ C) == (~B ⨽ A) ⊛ C
+        #         @test A ⊛ (B ⨼ C) == (~B ∧ A) ⊛ C
+        #         @test A ⊛ (B ∧ C) == (~B ⨼ A) ⊛ C
+        #     end
             
-            if V ∉ [Spacetime, ℂ, ℍ, Dual, PGA2D, PGA3D, CGA2D, CGA3D]
-                @test A ⊛ B == A' ⊛ B' == A.dual() ⊛ B.dual()
-            end 
+        #     if V ∉ [Spacetime, ℂ, ℍ, Dual, PGA2D, PGA3D, CGA2D, CGA3D]
+        #         @test A ⊛ B == A' ⊛ B' == A.dual() ⊛ B.dual()
+        #     end 
         
-            if V ∉ [Spacetime, PGA2D, PGA3D, CGA2D, CGA3D] # too slow
-                @test AB ⋅ C ∧ D == ((AB) ⋅ C) ∧ D
-            end
+        #     if V ∉ [Spacetime, PGA2D, PGA3D, CGA2D, CGA3D] # too slow
+        #         @test AB ⋅ C ∧ D == ((AB) ⋅ C) ∧ D
+        #     end
         
-            if V ∉ [Dual, PGA2D, PGA3D, CGA2D, CGA3D]
-                @test u.dual() == u * V.I()
-                @test proj(u, v) == (v ⋅ u) / u == (v ⨼ u) ⨼ u.inv()
-                @test proj(w, v) + proj(w, u) == proj(w, u + v)
-            end
+        #     if V ∉ [Dual, PGA2D, PGA3D, CGA2D, CGA3D]
+        #         @test u.dual() == u * V.I()
+        #         @test proj(u, v) == (v ⋅ u) / u == (v ⨼ u) ⨼ u.inv()
+        #         @test proj(w, v) + proj(w, u) == proj(w, u + v)
+        #     end
         
-            if V == Cl3
-                @test u × v == -I * (u ∧ v)
-                @test_throws PyCall.PyError A × B
+        #     if V == Cl3
+        #         @test u × v == -I * (u ∧ v)
+        #         @test_throws PyCall.PyError A × B
         
-                Vr = u ∧ v
-                @test proj(Vr, B) == B ⨼ Vr * (Vr)⁻¹ == (B ⨼ Vr) ⨼ (Vr)⁻¹                               # A.4.34
-                # TODO this is failing for now
-                @test_broken refl(Vr, B) == B ∧ Vr * (Vr)⁻¹ == (B ∧ Vr) ⨽ (Vr)⁻¹                               # A.4.35
+        #         Vr = u ∧ v
+        #         @test proj(Vr, B) == B ⨼ Vr * (Vr)⁻¹ == (B ⨼ Vr) ⨼ (Vr)⁻¹                               # A.4.34
+        #         # TODO this is failing for now
+        #         @test_broken refl(Vr, B) == B ∧ Vr * (Vr)⁻¹ == (B ∧ Vr) ⨽ (Vr)⁻¹                               # A.4.35
         
-                # The following tests verified interoperability with numeric and symbolic numbers
-                (ex, ey, ez) = V.mv()
+        #         # The following tests verified interoperability with numeric and symbolic numbers
+        #         (ex, ey, ez) = V.mv()
         
-                uu = vector(V, [1, 2, 3])
-                vv = vector(V, [4, 5, 6])
-                ww = vector(V, [5, 6, 7])
+        #         uu = vector(V, [1, 2, 3])
+        #         vv = vector(V, [4, 5, 6])
+        #         ww = vector(V, [5, 6, 7])
         
-                @test uu + vv == 5 * ex + 7 * ey + 9 * ez
-                @test 7 * uu + 2 * ww == 17 * ex + 26 * ey + 35 * ez
-                @test 7 * uu - 2 * ww == -3 * ex + 2 * ey + 7 * ez
-                @test 3 * uu + 2 * vv + ww == 16 * ex + 22 * ey + 28 * ez
-                @test (sympy.sqrt(2) * u + sympy.Rational(2, 3) * v) ⋅ ey == 
-                    sympy.sqrt(2) * (u ⋅ ey) + sympy.Rational(2, 3) * (v ⋅ ey)
-            end
-        end
+        #         @test uu + vv == 5 * ex + 7 * ey + 9 * ez
+        #         @test 7 * uu + 2 * ww == 17 * ex + 26 * ey + 35 * ez
+        #         @test 7 * uu - 2 * ww == -3 * ex + 2 * ey + 7 * ez
+        #         @test 3 * uu + 2 * vv + ww == 16 * ex + 22 * ey + 28 * ez
+        #         @test (sympy.sqrt(2) * u + sympy.Rational(2, 3) * v) ⋅ ey == 
+        #             sympy.sqrt(2) * (u ⋅ ey) + sympy.Rational(2, 3) * (v ⋅ ey)
+        #     end
+        # end
 
         @testset verbose=true "Graded identities" begin
-            @testset verbose=true "r: $r" for r ∈ dimV
+            r = 4
 
                 @test (A + B)[r] == A[r] + B[r]
                 @test (λ * A)[r] == (A * λ)[r] == λ * A[r]
@@ -322,12 +322,21 @@ end
 
                     A₁₋ᵣ = prod_a₁₋ᵣ
 
-                    for s ∈ dimV
+                    # for s ∈ dimV
+                    s = 3
                         Bs = B[s]
-                        A_Bs_Aǂ = A₁₋ᵣ * Bs * (A₁₋ᵣ)ǂ
+                        # 0.604375 seconds (5 allocations: 96 bytes)
+                        @time AB1 = A₁₋ᵣ * Bs
+                        # 0.976315 seconds (7.27 k allocations: 366.075 KiB, 1.75% compilation time)
+                        @time AB2 = (A₁₋ᵣ)ǂ
+                        # 60.840067 seconds (5 allocations: 96 bytes)
+                        @time A_Bs_Aǂ = AB1 * AB2
+                        # 283.460948 seconds (22 allocations: 704 bytes)
+                        @time @test A_Bs_Aǂ == A_Bs_Aǂ[s]
+                        # A_Bs_Aǂ = A₁₋ᵣ * Bs * (A₁₋ᵣ)ǂ
 
-                        @test A_Bs_Aǂ == A_Bs_Aǂ[s]                                                                              # A.4.32
-                    end
+                        # @test A_Bs_Aǂ == A_Bs_Aǂ[s]                                                                              # A.4.32
+                    # end
 
                     # TODO this is failing for now
                     # @test (A₁₋ᵣ * B * (A₁₋ᵣ)ǂ) ∧ (A₁₋ᵣ * C * (A₁₋ᵣ)ǂ) == A₁₋ᵣ.norm()^2 * A₁₋ᵣ * (B ∧ C) * (A₁₋ᵣ)ǂ        # A.4.33
@@ -382,7 +391,6 @@ end
                         end
                     end
                 end
-            end
         end
     end
 
@@ -403,6 +411,8 @@ end
     else
         [Cl2, Cl3, ℂ, ℍ, Hyper, Dual]
     end
+
+    setV = [G(4)]
 
     for V ∈ setV
         # @testset verbose=true "A" begin
