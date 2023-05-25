@@ -46,7 +46,7 @@ macro ctest(assertion::Expr, sep::QuoteNode, condition::Expr)
     end    
 end
 
-@testset "GAlgebra.jl" begin
+@testset verbose=true "GAlgebra.jl" begin
     # Basic 
     Hyper   = G(1)       # Hyperbolic numbers. 
     ℂ       = G(0,1)     # Complex numbers.
@@ -89,7 +89,7 @@ end
         BA = B * A
     
         # The following tests verified implementation correctness per definition
-        @testset "definition" begin
+        @testset verbose=true "definition" begin
         
             @test u ⋅ v == u | v == (u < v) == (u > v) == u ⨼ v == u ⨽ v == u ⊙ v
             @test u ∧ v == u ⊠ v
@@ -158,7 +158,7 @@ end
 
 
         # The following tests verified many identities in Linear Algebra
-        @testset "LA identities" begin
+        @testset verbose=true "LA identities" begin
             @test v + w == w + v
             @test (u + v) + w == u + (v + w)
             @test v + 0 == v
@@ -184,7 +184,7 @@ end
         #   - A.4.27
         # - The following formulas are broken for now
         #   - A.4.{33, 35}
-        @testset "GA identities" begin
+        @testset verbose=true "GA identities" begin
             @test v * v == (v * v).scalar()
             @test v * B == v ⋅ B + v ∧ B == v ⨼ B + v ∧ B
         
@@ -288,8 +288,8 @@ end
             end
         end
 
-        @testset "Graded identities" begin
-            @testset "r: $r" for r ∈ dimV
+        @testset verbose=true "Graded identities" begin
+            @testset verbose=true "r: $r" for r ∈ dimV
 
                 @test (A + B)[r] == A[r] + B[r]
                 @test (λ * A)[r] == (A * λ)[r] == λ * A[r]
@@ -343,7 +343,7 @@ end
                     end
                 end
         
-                @testset "ArBs s: $s"  for s ∈ dimV
+                @testset verbose=true "ArBs s: $s"  for s ∈ dimV
                     @test A[r][s] == (if r == s; A[r] else 0 end)
         
                     Bs = B[s]
@@ -405,9 +405,16 @@ end
     end
 
     for V ∈ setV
+        # @testset verbose=true "A" begin
+        #     @testset verbose=true "B" begin
+        #         @test 1==1
+        #         @test 2==2
+        #         @test_broken 1==0
+        #     end
+        # end
+
         sigV = signature(V)
-        @testset "G$sigV" begin
-            # @test_broken 1==1 # for triggering error
+        @testset verbose=true "G$sigV" begin
             test_all(V)
         end
 
