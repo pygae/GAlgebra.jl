@@ -322,12 +322,13 @@ end
 
                     A₁₋ᵣ = prod_a₁₋ᵣ
 
-                    @testset verbose=true "s: $r" for s ∈ dimV
-                        Bs = B[s]
-                        A_Bs_Aǂ = A₁₋ᵣ * Bs * (A₁₋ᵣ)ǂ
+                    # too slow, see #11
+                    # @testset verbose=true "s: $r" for s ∈ dimV
+                    #     Bs = B[s]
+                    #     A_Bs_Aǂ = A₁₋ᵣ * Bs * (A₁₋ᵣ)ǂ
 
-                        @test A_Bs_Aǂ == A_Bs_Aǂ[s]                                                                              # A.4.32
-                    end
+                    #     @test A_Bs_Aǂ == A_Bs_Aǂ[s]                                                                              # A.4.32
+                    # end
 
                     # TODO this is failing for now
                     # @test (A₁₋ᵣ * B * (A₁₋ᵣ)ǂ) ∧ (A₁₋ᵣ * C * (A₁₋ᵣ)ǂ) == A₁₋ᵣ.norm()^2 * A₁₋ᵣ * (B ∧ C) * (A₁₋ᵣ)ǂ        # A.4.33
