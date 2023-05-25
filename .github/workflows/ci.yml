@@ -23,7 +23,7 @@ jobs:
     
     steps:
       - name: Setup python
-        uses: actions/setup-python@v1
+        uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python }}
           architecture: x64
