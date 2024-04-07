@@ -15,23 +15,22 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        julia-version: [1.0.4, 1.1.1]
+        julia-version: [1.10.2]
         os: [ubuntu-latest]
-        python: [ '3.x' ]
+        python-version: ["3.11"]
         project: ['GAlgebra']
     
     steps:
-      - name: Setup python
-        uses: actions/setup-python@v1
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
         with:
-          python-version: ${{ matrix.python }}
-          architecture: x64
+          python-version: ${{ matrix.python-version }}
       - name: "Set up Julia"
         uses: julia-actions/setup-julia@v0.2
         with:
           version: ${{ matrix.julia-version }}
-      - name: "Check out"
-        uses: actions/checkout@v1.0.0
       - name: "Test"
         run: |
           julia --project=@. -e "using Pkg; Pkg.instantiate();"
