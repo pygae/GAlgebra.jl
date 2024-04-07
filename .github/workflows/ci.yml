@@ -27,10 +27,12 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
-      - name: "Set up Julia"
-        uses: julia-actions/setup-julia@v0.2
+      - name: Setup julia
+        uses: julia-actions/setup-julia@v1
         with:
           version: ${{ matrix.julia-version }}
+          arch: ${{ matrix.architecture }}
+          show-versioninfo: true
       - name: "Test"
         run: |
           julia --project=@. -e "using Pkg; Pkg.instantiate();"
