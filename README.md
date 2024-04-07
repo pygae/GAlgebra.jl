@@ -130,7 +130,7 @@ The package can be installed with the Julia package manager. From the Julia REPL
 dev https://github.com/pygae/GAlgebra.jl.git
 ```
 
-The installation process will take a while, because it will install [PyCall.jl](https://github.com/JuliaPy/PyCall.jl) and its dependencies and it will also use `pip` to install [GAlgebra](https://github.com/pygae/galgebra) if you haven't. If you wish to use a version other than the latest released version of GAlgebra that will be installed by [deps/build.jl](deps/build.jl), you can install that via pip before/after the installation of `GAlgebra.jl`, e.g. `pip install -e <your local path to GAlgebra>` or `pip install https://github.com/pygae/galgebra/archive/master.zip`.
+The installation process will take a while, because it will install [PyCall.jl](https://github.com/JuliaPy/PyCall.jl) and its dependencies and it will also use `pip` to install [GAlgebra](https://github.com/pygae/galgebra) if you haven't. If you wish to use a version other than the latest released version of GAlgebra that will be installed by `deps/build.jl`, you can install that via pip before/after the installation of `GAlgebra.jl`, e.g. `pip install -e <your local path to GAlgebra>` or `pip install https://github.com/pygae/galgebra/archive/master.zip`.
 
 Now you may run GAlgebra.jl tests in Julia **Pkg REPL mode**: 
 
