@@ -19,6 +19,7 @@ jobs:
         os: [ubuntu-latest]
         python-version: ["3.11"]
         project: ['GAlgebra']
+        architecture: ['x64']
     
     steps:
       - name: Checkout
