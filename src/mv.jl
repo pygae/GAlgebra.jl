@@ -13,6 +13,7 @@ import Base: abs, inv, adjoint, exp, getindex
 export Mv
 
 export norm, rev, dual, involute, proj, refl, rot, exp_with_hint, scalar, even, odd
+export undual, mag2, mag, shirokov_inverse, hitzer_inverse, sp
 # export \cdot, \wedge, \intprod, \intprodr, \odot, \boxtimes, \circledast, \times
 export +, -, *, /, ^, |, %, ==, !=, <, >, <<, >>, ~, ⋅, ∧, ⨼, ⨽, ⊙, ⊠, ⊛, ×
 # Operator precedence: they have the same precedence, unlike in math
@@ -364,3 +365,60 @@ Odd-grade part.
         x.__pow__(y)
     end
 end
+
+# ── galgebra 0.6.0 additions ──────────────────────────────────────────────────
+
+@doc raw"""
+Inverse of `dual()`: `undual(dual(A)) == A` and `dual(undual(A)) == A`.
+
+`undual(A) = A.undual()` ``\equiv I^2 A^{\bot}``
+"""
+@define_unary_op(Mv, undual, undual)
+
+@doc raw"""
+Squared magnitude: sum of absolute values of grade-wise norm-squareds.
+
+`mag2(A) = A.mag2()`
+
+For Euclidean metrics this equals `norm(A)^2`; for non-Euclidean metrics
+it differs from `norm2` since it sums `|⟨A⟩_r * ~⟨A⟩_r|` per grade.
+"""
+@define_unary_op(Mv, mag2, mag2)
+
+@doc raw"""
+Magnitude: square root of `mag2(A)`.
+
+`mag(A) = A.mag()`
+
+Equals `norm(A)` only for Euclidean metrics.
+"""
+@define_unary_op(Mv, mag, mag)
+
+@doc raw"""
+Multivector inverse via Shirokov's algorithm (Theorem 4, arXiv:2005.04015).
+
+`shirokov_inverse(A) = A.shirokov_inverse()`
+
+Works for any Clifford algebra. Raises an error if A has no inverse.
+"""
+@define_unary_op(Mv, shirokov_inverse, shirokov_inverse)
+
+@doc raw"""
+Multivector inverse via Hitzer–Sangwine algorithm.
+
+`hitzer_inverse(A) = A.hitzer_inverse()`
+
+Efficient for ``n < 6`` (number of basis vectors). Raises an error if A has no inverse.
+"""
+@define_unary_op(Mv, hitzer_inverse, hitzer_inverse)
+
+@doc raw"""
+Scalar product of A and B: ``\langle A B \rangle``.
+
+`sp(A, B)` ``\equiv (A B)_0``
+
+Note: differs from `A ⊛ B` which is ``\langle A \tilde{B} \rangle``.
+Pass `switch="rev"` to use ``\langle \tilde{A} B \rangle`` instead.
+"""
+sp(A::Mv, B::Mv) = A.sp(B)
+sp(A::Mv, B::Mv, switch::AbstractString) = A.sp(B, switch)
