@@ -176,10 +176,11 @@ end
         # Summary
         #
         # - The formulas after XXX are work-in-progress
-        # - The following formulas are skip for now
-        #   - A.4.27
+        # - The following formulas are skipped for now
+        #   - A.4.27 (not yet investigated)
         # - The following formulas are broken for now
-        #   - A.4.{33, 35}
+        #   - A.4.33 (see issue #14, now @test_broken)
+        #   - A.4.35 (see issue #15)
     
         @test v * v == (v * v).scalar()
         @test v * B == v ⋅ B + v ∧ B == v ⨼ B + v ∧ B
@@ -232,8 +233,8 @@ end
                     @test A_Bs_Aǂ == A_Bs_Aǂ[s]                                                                              # A.4.32
                 end
 
-                # TODO this is failing for now
-                # @test (A₁₋ᵣ * B * (A₁₋ᵣ)ǂ) ∧ (A₁₋ᵣ * C * (A₁₋ᵣ)ǂ) == A₁₋ᵣ.norm()^2 * A₁₋ᵣ * (B ∧ C) * (A₁₋ᵣ)ǂ        # A.4.33
+                # issue #14: norm()^2 involves sqrt; SymPy may not simplify the equality
+                @test_broken (A₁₋ᵣ * B * (A₁₋ᵣ)ǂ) ∧ (A₁₋ᵣ * C * (A₁₋ᵣ)ǂ) == A₁₋ᵣ.norm()^2 * A₁₋ᵣ * (B ∧ C) * (A₁₋ᵣ)ǂ        # A.4.33
 
                 if r > 1
                     function reduce_except(op, arr, j)
