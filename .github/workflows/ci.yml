@@ -38,6 +38,8 @@ jobs:
           version: ${{ matrix.julia-version }}
           arch: ${{ matrix.architecture }}
           show-versioninfo: true
+      - name: Configure PyCall to use system Python
+        run: julia --project=@. -e 'import Pkg; ENV["PYTHON"] = Sys.which("python3"); Pkg.build("PyCall")'
       - name: "Test"
         run: |
           julia --project=@. -e "using Pkg; Pkg.instantiate();"
@@ -52,6 +54,7 @@ jobs:
         uses: codecov/codecov-action@v4
         with:
           token: ${{secrets.CODECOV_TOKEN}}
+          files: coverage-lcov.info
         if: success()
       - name: "Generate documentation"
         run: |

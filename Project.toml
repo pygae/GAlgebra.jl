@@ -9,7 +9,7 @@ PyCall = "438e738f-606a-5dbb-bf0a-cddfbfd45ab0"
 [compat]
 PyCall = "1.96"
 SymPy = "2.0"
-julia = "1.10"
+julia = "1.10, 1.11"
 
 [extras]
 SymPy = "24249f21-da20-56a4-8eb1-6a02cf4ae2e6"
