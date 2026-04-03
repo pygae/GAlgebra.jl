@@ -18,13 +18,19 @@ include("ga.jl")
 include("mv.jl")
 
 function __init__()
-    copy!(galgebra, PyCall.pyimport_conda("galgebra", "galgebra"))
-    copy!(metric, PyCall.pyimport_conda("galgebra.metric", "galgebra"))
-    copy!(ga, PyCall.pyimport_conda("galgebra.ga", "galgebra"))
-    copy!(mv, PyCall.pyimport_conda("galgebra.mv", "galgebra"))
-    copy!(lt, PyCall.pyimport_conda("galgebra.lt", "galgebra"))
-    copy!(printer, PyCall.pyimport_conda("galgebra.printer", "galgebra"))
-    
+    copy!(galgebra, pyimport("galgebra"))
+    copy!(metric, pyimport("galgebra.metric"))
+    copy!(ga, pyimport("galgebra.ga"))
+    copy!(mv, pyimport("galgebra.mv"))
+    copy!(lt, pyimport("galgebra.lt"))
+    copy!(printer, pyimport("galgebra.printer"))
+
+    if get(ENV, "GALGEBRA_DEBUG", "") != ""
+        ver = galgebra.__version__
+        python = PyCall.pyprogramname
+        @info "[GAlgebra.jl] galgebra $ver loaded from Python: $python"
+    end
+
     pytype_mapping(galgebra.mv.Mv, Mv)
 end
 

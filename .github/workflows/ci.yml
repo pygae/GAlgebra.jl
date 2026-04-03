@@ -39,6 +39,8 @@ jobs:
           arch: ${{ matrix.architecture }}
           show-versioninfo: true
       - name: "Test"
+        env:
+          PYTHON: ${{ env.pythonLocation }}/bin/python3
         run: |
           julia --project=@. -e "using Pkg; Pkg.instantiate();"
           julia --project=@. -e "using Pkg; Pkg.build(\"${{ matrix.project }}\");"
@@ -52,6 +54,7 @@ jobs:
         uses: codecov/codecov-action@v4
         with:
           token: ${{secrets.CODECOV_TOKEN}}
+          files: coverage-lcov.info
         if: success()
       - name: "Generate documentation"
         run: |
