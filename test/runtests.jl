@@ -176,10 +176,11 @@ end
         # Summary
         #
         # - The formulas after XXX are work-in-progress
-        # - The following formulas are skip for now
-        #   - A.4.27
+        # - The following formulas are skipped for now
+        #   - A.4.27 (not yet investigated)
         # - The following formulas are broken for now
-        #   - A.4.{33, 35}
+        #   - A.4.33 (see issue #14, now @test_broken)
+        #   - A.4.35 (see issue #15, split into two @test_broken)
     
         @test v * v == (v * v).scalar()
         @test v * B == v ⋅ B + v ∧ B == v ⨼ B + v ∧ B
@@ -360,8 +361,12 @@ end
     
             Vr = u ∧ v
             @test proj(Vr, B) == B ⨼ Vr * (Vr)⁻¹ == (B ⨼ Vr) ⨼ (Vr)⁻¹                               # A.4.34
-            # TODO this is failing for now
-            @test_broken refl(Vr, B) == B ∧ Vr * (Vr)⁻¹ == (B ∧ Vr) ⨽ (Vr)⁻¹                               # A.4.35
+            # A.4.35: rejection formula (B∧Vr)*Vr⁻¹
+            # refl() in galgebra is a grade-by-grade sandwich Vr*B[r]*Vr⁻¹ (with signs),
+            # not rejection. The original chained equality mixed the two.
+            # Split to diagnose which part fails (see issue #15).
+            @test_broken (B ∧ Vr) * (Vr)⁻¹ == (B ∧ Vr) ⨽ (Vr)⁻¹                              # A.4.35 (rejection)
+            @test_broken refl(Vr, B) == (B ∧ Vr) * (Vr)⁻¹                                    # A.4.35 (refl vs rejection)
     
             # The following tests verified interoperability with numeric and symbolic numbers
             (ex, ey, ez) = V.mv()
