@@ -151,7 +151,7 @@ end
         @test (A)₋ == A[:-] == odd(A) == A.odd()
     
         for r ∈ dimV
-            A[r] == A.grade(r) == A.get_grade(r)
+            @test A[r] == A.grade(r) == A.get_grade(r)
         end
     
         # The following tests verified many identities in Linear Algebra
@@ -176,10 +176,11 @@ end
         # Summary
         #
         # - The formulas after XXX are work-in-progress
-        # - The following formulas are skip for now
-        #   - A.4.27
+        # - The following formulas are skipped for now
+        #   - A.4.27 (not yet investigated)
         # - The following formulas are broken for now
-        #   - A.4.{33, 35}
+        #   - A.4.33 (see issue #14)
+        #   - A.4.35 (see issue #15)
     
         @test v * v == (v * v).scalar()
         @test v * B == v ⋅ B + v ∧ B == v ⨼ B + v ∧ B
@@ -212,7 +213,7 @@ end
             @test Ar * v == Ar ⨽ v + Ar ∧ v
     
             Br = B[r]
-            Ar ⨼ Br == Ar ⨽ Br == (Ar * Br).scalar()
+            @test Ar ⨼ Br == Ar ⨽ Br == (Ar * Br).scalar()
 
             if r > 0
                 a = V.mv("a", "vector")
@@ -281,7 +282,7 @@ end
                     for t ∈ dimV
                         Ct = C[t]
     
-                        Ar ∧ (Bs ∧ Ct) == (Ar * Bs * Ct)[r + s + t]
+                        @test Ar ∧ (Bs ∧ Ct) == (Ar * Bs * Ct)[r + s + t]
                     end
                 end
             end
