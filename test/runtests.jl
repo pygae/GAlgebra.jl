@@ -104,6 +104,10 @@ end
         if V ∉ [Spacetime, PGA2D, PGA3D, CGA2D, CGA3D]
             @test abs(R) == norm(R) == R.norm()
         end
+
+        # galgebra 0.6.0 additions: mag2/mag (grade-wise sum of |norm2|, differs from norm in non-Euclidean)
+        @test mag2(v) == v.mag2()
+        @test mag(v) == v.mag()
     
         @test ~A == A[:~] == rev(A) == A.rev()
     
@@ -111,10 +115,16 @@ end
             @test A' == dual(A) == A.dual() == adjoint(A) == A * I # Ga.dual_mode_value is default to "I+"
             @test (v)⁻¹ == v[:⁻¹] == v^-1 == inv(v) == v.inv()
             @test v^-2 == (v^2).inv()
+            # galgebra 0.6.0: undual is inverse of dual
+            @test undual(dual(v)) == v
+            @test dual(undual(v)) == v
         end
     
         @test (A)ˣ == A[:*] == involute(A) == (A)₊ - (A)₋ == A[:+] - A[:-] == A.even() - A.odd()
-        @test (A)ǂ == A[:ǂ] == conj(A) == involute(A).rev()   
+        @test (A)ǂ == A[:ǂ] == conj(A) == involute(A).rev()
+        # galgebra 0.6.0: g_invol() and ccon() are new names for involute/conj
+        @test involute(A) == A.g_invol()
+        @test conj(A) == A.ccon()   
     
         if V ∉ [Spacetime, PGA2D, PGA3D, CGA2D, CGA3D]
             @test R^-2 == (R^2).inv()
@@ -126,6 +136,9 @@ end
         if V ∈ [Cl2, Cl3]
             @test (v)⁻¹ == (~v) / norm(v)^2 == v / v^2 
             @test (R)⁻¹ == (~R) / norm(R)^2 == R / R^2
+            # galgebra 0.6.0: alternative inverse algorithms
+            @test shirokov_inverse(v) == v.shirokov_inverse() == inv(v)
+            @test hitzer_inverse(v) == v.hitzer_inverse() == inv(v)
         end
     
         @test v^0 == 1
@@ -147,6 +160,9 @@ end
         # @test typeof(scalar(A)) == Sym
         @test typeof(A[0]) == Mv
         @test scalar(A) == A.scalar() == A[0].obj
+        # galgebra 0.6.0: sp is (A*B).scalar(), distinct from A ⊛ B = (A*~B).scalar()
+        @test sp(A, B) == A.sp(B)
+        @test sp(A, B) == (A * B).scalar()
         @test (A)₊ == A[:+] == even(A) == A.even()
         @test (A)₋ == A[:-] == odd(A) == A.odd()
     
