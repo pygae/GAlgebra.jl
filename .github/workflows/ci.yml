@@ -38,9 +38,9 @@ jobs:
           version: ${{ matrix.julia-version }}
           arch: ${{ matrix.architecture }}
           show-versioninfo: true
-      - name: Configure PyCall to use system Python
-        run: julia --project=@. -e 'import Pkg; ENV["PYTHON"] = Sys.which("python3"); Pkg.build("PyCall")'
       - name: "Test"
+        env:
+          PYTHON: ${{ env.pythonLocation }}/bin/python3
         run: |
           julia --project=@. -e "using Pkg; Pkg.instantiate();"
           julia --project=@. -e "using Pkg; Pkg.build(\"${{ matrix.project }}\");"
