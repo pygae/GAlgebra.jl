@@ -176,8 +176,6 @@ end
         # Summary
         #
         # - The formulas after XXX are work-in-progress
-        # - The following formulas are skip for now
-        #   - A.4.27
         # - The following formulas are broken for now
         #   - A.4.{33, 35}
     
@@ -365,7 +363,27 @@ end
     
             # The following tests verified interoperability with numeric and symbolic numbers
             (ex, ey, ez) = V.mv()
-    
+
+            # A.4.27: signed expansion over the 2-element subsets of three vectors.
+            B2 = ex ∧ ey + 2 * (ey ∧ ez)
+            a1 = ex + ey
+            a2 = ey + ez
+            a3 = ez + ex
+            lhs_A427 = B2 ⨼ (a1 ∧ a2 ∧ a3)
+            term12_A427 = (B2 ⨼ (a1 ∧ a2)) * a3
+            term13_A427 = (B2 ⨼ (a1 ∧ a3)) * a2
+            term23_A427 = (B2 ⨼ (a2 ∧ a3)) * a1
+
+            @test lhs_A427 != 0
+            @test term12_A427 != 0
+            @test term13_A427 != 0
+            @test term23_A427 != 0
+            @test lhs_A427 == -4 * ex - 2 * ez
+            @test term12_A427 == -3 * ex - 3 * ez
+            @test term13_A427 == -ey - ez
+            @test term23_A427 == -ex - ey
+            @test lhs_A427 == term12_A427 - term13_A427 + term23_A427
+
             uu = vector(V, [1, 2, 3])
             vv = vector(V, [4, 5, 6])
             ww = vector(V, [5, 6, 7])
