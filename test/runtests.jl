@@ -179,7 +179,7 @@ end
         # - The following formulas are skip for now
         #   - A.4.27
         # - The following formulas are broken for now
-        #   - A.4.{33, 35}
+        #   - A.4.33
     
         @test v * v == (v * v).scalar()
         @test v * B == v ⋅ B + v ∧ B == v ⨼ B + v ∧ B
@@ -360,8 +360,7 @@ end
     
             Vr = u ∧ v
             @test proj(Vr, B) == B ⨼ Vr * (Vr)⁻¹ == (B ⨼ Vr) ⨼ (Vr)⁻¹                               # A.4.34
-            # TODO this is failing for now
-            @test_broken refl(Vr, B) == B ∧ Vr * (Vr)⁻¹ == (B ∧ Vr) ⨽ (Vr)⁻¹                               # A.4.35
+            @test (B ∧ Vr) * (Vr)⁻¹ == (B ∧ Vr) ⨽ (Vr)⁻¹                                         # A.4.35
     
             # The following tests verified interoperability with numeric and symbolic numbers
             (ex, ey, ez) = V.mv()
