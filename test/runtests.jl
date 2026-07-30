@@ -64,6 +64,23 @@ end
     CGA2D = G(3,1)       # Conformal 2D space. 
     CGA3D = G(4,1)       # Conformal 3D space. 
 
+    @testset "A.4.33 versor outer-product identity" begin
+        for (signature_name, V) ∈ (("positive", Cl2), ("negative", ℂ))
+            @testset "$signature_name signature" begin
+                basis = V.mv()
+                A = basis[1]
+                B = 1 + 2 * basis[1]
+                C = 3 + 5 * basis[end]
+
+                lhs = (A * B * ~A) ∧ (A * C * ~A)
+                rhs = (A ⊛ A) * A * (B ∧ C) * ~A
+
+                @test lhs != 0
+                @test lhs == rhs
+            end
+        end
+    end
+
     function test_all(V)
         dimV = range(0, stop=V.n)
         I = V.I()
@@ -179,7 +196,7 @@ end
         # - The following formulas are skip for now
         #   - A.4.27
         # - The following formulas are broken for now
-        #   - A.4.{33, 35}
+        #   - A.4.35
     
         @test v * v == (v * v).scalar()
         @test v * B == v ⋅ B + v ∧ B == v ⨼ B + v ∧ B
@@ -231,9 +248,6 @@ end
 
                     @test A_Bs_Aǂ == A_Bs_Aǂ[s]                                                                              # A.4.32
                 end
-
-                # TODO this is failing for now
-                # @test (A₁₋ᵣ * B * (A₁₋ᵣ)ǂ) ∧ (A₁₋ᵣ * C * (A₁₋ᵣ)ǂ) == A₁₋ᵣ.norm()^2 * A₁₋ᵣ * (B ∧ C) * (A₁₋ᵣ)ǂ        # A.4.33
 
                 if r > 1
                     function reduce_except(op, arr, j)
