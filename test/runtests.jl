@@ -360,8 +360,7 @@ end
     
             Vr = u ∧ v
             @test proj(Vr, B) == B ⨼ Vr * (Vr)⁻¹ == (B ⨼ Vr) ⨼ (Vr)⁻¹                               # A.4.34
-            # TODO this is failing for now
-            @test_broken refl(Vr, B) == B ∧ Vr * (Vr)⁻¹ == (B ∧ Vr) ⨽ (Vr)⁻¹                               # A.4.35
+            @test (B ∧ Vr) * (Vr)⁻¹ == (B ∧ Vr) ⨽ (Vr)⁻¹                                         # A.4.35
     
             # The following tests verified interoperability with numeric and symbolic numbers
             (ex, ey, ez) = V.mv()
