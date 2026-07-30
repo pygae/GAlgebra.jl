@@ -224,10 +224,17 @@ end
                 @test wedge_a₁₋ᵣ == prod_a₁₋ᵣ[r]                                                  # A.4.12
 
                 A₁₋ᵣ = prod_a₁₋ᵣ
+                A₁₋ᵣ_for_A432 = if V == Spacetime
+                    # A fixed numeric versor avoids costly symbolic expansion in Cl(1,3).
+                    components = ([3, 2, 1, 1], [3, 1, 1, 2], [3, 1, 2, 1], [3, 1, 1, 1])
+                    reduce(*, [vector(V, c) for c in components[1:r]])
+                else
+                    A₁₋ᵣ
+                end
 
                 for s ∈ dimV
                     Bs = B[s]
-                    A_Bs_Aǂ = A₁₋ᵣ * Bs * (A₁₋ᵣ)ǂ
+                    A_Bs_Aǂ = A₁₋ᵣ_for_A432 * Bs * (A₁₋ᵣ_for_A432)ǂ
 
                     @test A_Bs_Aǂ == A_Bs_Aǂ[s]                                                                              # A.4.32
                 end
