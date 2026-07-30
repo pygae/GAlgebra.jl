@@ -179,7 +179,7 @@ end
         # - The following formulas are skip for now
         #   - A.4.27
         # - The following formulas are broken for now
-        #   - A.4.{33, 35}
+        #   - A.4.33
     
         @test v * v == (v * v).scalar()
         @test v * B == v ⋅ B + v ∧ B == v ⨼ B + v ∧ B
